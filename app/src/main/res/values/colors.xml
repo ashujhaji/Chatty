@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ffffff</color>
+    <color name="colorPrimaryDark">#ffffff</color>
+    <color name="colorAccent">#990000</color>
+    <color name="white">#FFF</color>
+    <color name="black">#000</color>
+    <color name="gray">#c5c5c5</color>
+    <color name="red">#E55C5C</color>
+    <color name="red_press">#990000</color>
+    <color name="light_gray">#808080</color>
+    <color name="textColorGray">#808080</color>
+    <color name="textColor">#273444</color>
+    <color name="textColorGreen">#3FBC8A</color>
+    <color name="dark_green">#4CAF50</color>
+    <color name="light_slate">#8492A6</color>
+    <color name="light_snow">#FEFEFE</color>
+    <color name="app_main_color">#1B4D86</color>
+    <color name="medium_snow">#EFF2F7</color>
+    <color name="medium_slate">#646464</color>
+    <color name="purple">#9386F2</color>
+    <color name="light_smoke">#C0CCDA</color>
+    <color name="purple_500">#6F43D8</color>
+    <color name="light_green">#68D6AF</color>
+    <color name="disabled_text_color">#4fC0CCDA</color>
+
+    <color name="green_500">#10C47D</color>
+    <color name="yellow_800">#FFA101</color>
+    <color name="navy_blue_900">#14354d</color>
+</resources>
