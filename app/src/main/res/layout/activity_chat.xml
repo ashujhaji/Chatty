@@ -24,7 +24,8 @@
         android:layout_gravity="bottom"
         android:layout_margin="@dimen/ten_dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:id="@+id/bottomView">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="@dimen/fifty_dp"
