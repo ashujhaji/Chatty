@@ -6,12 +6,12 @@ public class MessagePojo {
     private String sender;
     private String message;
 
-    public MessagePojo(String message_id, String create_at, String sender, String message) {
+    /*public MessagePojo(String message_id, String create_at, String sender, String message) {
         this.message_id = message_id;
         this.create_at = create_at;
         this.sender = sender;
         this.message = message;
-    }
+    }*/
 
     public String getMessage_id() {
         return message_id;

@@ -6,14 +6,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chatty.app.R;
+import com.chatty.app.adapter.ChatAdapter;
 import com.chatty.app.model.MessagePojo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
@@ -59,6 +63,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        //set recyclerview
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true));
+        recyclerView.setAdapter(new ChatAdapter(messages,this));
 
         addUserInWaitingRoom();
 
@@ -138,7 +146,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getChildrenCount() == 1) {
                     //Wait
-                    dialog.show();
+                    try {
+                        dialog.show();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 } else if (snapshot.getChildrenCount() > 1) {
                     //Start chat
                     List<String> users = new ArrayList<>();
@@ -163,6 +175,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void startChat(final List<String> users) {
         final DatabaseReference mRef = mDatabaseRef.child("ongoing_chat").child(users.get(0) + users.get(1));
         isChatActive = true;
+        messages = new ArrayList();
         chatId = users.get(0) + users.get(1);
         dialog.dismiss();
         listenForMessages(mRef);
@@ -172,10 +185,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sendMessage(String messageText){
-        DatabaseReference mRef = mDatabaseRef.child("ongoing_chat").child(chatId).push();
+        DatabaseReference mRef = mDatabaseRef.child("ongoing_chat").child(chatId).child("messages").push();
         Map<String, String> message = new HashMap<>();
-        message.put("message_id", UUID.randomUUID().toString());
-        message.put("create_at", String.valueOf(System.currentTimeMillis()));
+       // message.put("message_id", UUID.randomUUID().toString());
+       // message.put("create_at", String.valueOf(System.currentTimeMillis()));
         message.put("sender", currentUser.getUid());
         message.put("message", messageText);
         mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -187,15 +200,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void listenForMessages(DatabaseReference mRef) {
-        mRef.child("message").limitToLast(1).addValueEventListener(new ValueEventListener() {
+        mRef.child("messages").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getChildrenCount()>0){
-                    
+                   // messages.clear();
+                    List<MessagePojo> messageList = new ArrayList<>();
+                    for (DataSnapshot message: snapshot.getChildren()) {
+                        MessagePojo msg = message.getValue(MessagePojo.class);
+                        messageList.add(msg);
+                    }
+
+                    //Notify adapter
+                    messages.add(messageList.get(messageList.size()-1));
+                    Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(messages.size()-1);
+                    Log.d("messageTag",String.valueOf(messages.size()));
                 }else{
                     if (!messages.isEmpty()){
                         //Chat exit
-                        isChatActive = false;
+                      //  isChatActive = false;
                     }
                 }
             }
@@ -212,7 +235,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()){
             case R.id.send : {
                 if (!isChatActive){
-
+                    Toast.makeText(this,"Chat is not active",Toast.LENGTH_LONG).show();
                     return;
                 }
                 if (messageField.getText().toString().isEmpty()){
