@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,13 +44,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView recyclerView;
     private EditText messageField;
     private ImageView send;
+    private TextView disclaimer;
     private DatabaseReference mDatabaseRef;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private boolean isChatActive = false;
     private String chatId = "";
     private ProgressDialog dialog;
-    private List<MessagePojo> messages;
+    private List<MessagePojo> messages = new ArrayList<>();
 
 
     @Override
@@ -65,7 +67,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         currentUser = mAuth.getCurrentUser();
 
         //set recyclerview
-        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(new ChatAdapter(messages,this));
 
         addUserInWaitingRoom();
@@ -94,6 +96,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView = findViewById(R.id.recyclerView);
         messageField = findViewById(R.id.messageField);
         send = findViewById(R.id.send);
+        disclaimer = findViewById(R.id.disclaimer);
 
         send.setOnClickListener(this);
     }
@@ -173,22 +176,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startChat(final List<String> users) {
-        final DatabaseReference mRef = mDatabaseRef.child("ongoing_chat").child(users.get(0) + users.get(1));
+        Toast.makeText(this,"Chat starting",Toast.LENGTH_LONG).show();
         isChatActive = true;
-        messages = new ArrayList();
         chatId = users.get(0) + users.get(1);
+        disclaimer.setVisibility(View.GONE);
         dialog.dismiss();
-        listenForMessages(mRef);
+        listenForMessages(mDatabaseRef.child("ongoing_chat").child(users.get(0) + users.get(1)));
         for (String user : users) {
             removeUserFromWaiting(user);
         }
     }
 
     private void sendMessage(String messageText){
+        //add to list
+        messages.add(new MessagePojo(currentUser.getUid(),messageField.getText().toString()));
+        messageField.setText("");
+        Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(messages.size()-1);
+
         DatabaseReference mRef = mDatabaseRef.child("ongoing_chat").child(chatId).child("messages").push();
         Map<String, String> message = new HashMap<>();
-       // message.put("message_id", UUID.randomUUID().toString());
-       // message.put("create_at", String.valueOf(System.currentTimeMillis()));
         message.put("sender", currentUser.getUid());
         message.put("message", messageText);
         mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -207,14 +213,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                    // messages.clear();
                     List<MessagePojo> messageList = new ArrayList<>();
                     for (DataSnapshot message: snapshot.getChildren()) {
-                        MessagePojo msg = message.getValue(MessagePojo.class);
-                        messageList.add(msg);
+                        messageList.add(new MessagePojo(message.child("sender").getValue().toString(),message.child("message").getValue().toString()));
                     }
 
                     //Notify adapter
-                    messages.add(messageList.get(messageList.size()-1));
-                    Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(messages.size()-1);
-                    Log.d("messageTag",String.valueOf(messages.size()));
+                    if (!messageList.get(messageList.size()-1).getSender().contentEquals(currentUser.getUid())){
+                        messages.add(messageList.get(messageList.size()-1));
+                        Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(messages.size()-1);
+                        Log.d("messageTag",String.valueOf(messages.size()));
+                    }
                 }else{
                     if (!messages.isEmpty()){
                         //Chat exit
