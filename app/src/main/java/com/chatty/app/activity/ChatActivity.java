@@ -51,7 +51,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseUser currentUser;
     private boolean isChatActive = false;
     private String chatId = "";
-    private String chatKey = "";
     private ProgressDialog dialog;
     private List<MessagePojo> messages = new ArrayList<>();
 
@@ -82,8 +81,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if (isChatActive) {
             //Remove chat
             removeChat(chatId);
-        } else {
-            //Remove user from waiting list
         }
     }
 
@@ -113,8 +110,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void removeChat(String chatId) {
         if (!chatId.isEmpty()) {
-            DatabaseReference mRef = mDatabaseRef.child("ongoing_chat");
-            mRef.removeValue();
+            DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chatId);
+            Map<String, String> message = new HashMap<>();
+            message.put("status", "finish");
+            mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    dialog.dismiss();
+                }
+            });
         }
     }
 
@@ -127,11 +131,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (snapshot.getChildrenCount() > 0) {
                     //Chat room available
                     for (DataSnapshot chat : snapshot.getChildren()) {
-                        chatId = chat.child("chat_id").getValue().toString();
-                        chatKey = chat.getKey();
-                        addToChat(chatId, chat.getKey());
+                        chatId = chat.getKey();
+                        addToChat(chatId);
                         break;
-                        //chat.getValue("chat_id").toString()
                     }
                 } else {
                     //No chat room available. Create new one
@@ -147,12 +149,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void createNewChat() {
-        DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").push();
+        DatabaseReference mRef = mDatabaseRef.child("ongoing_chats");
         chatId = UUID.randomUUID().toString();
         Map<String, String> message = new HashMap<>();
-        message.put("chat_id", chatId);
+        //message.put("chat_id", chatId);
         message.put("status", "waiting");
-        mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
+        mRef.child(chatId).setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 listenForStatusChange(chatId);
@@ -161,10 +163,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void addToChat(String chatId, final String key) {
-        DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(key);
+    private void addToChat(final String chatId) {
+        DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chatId);
         Map<String, String> message = new HashMap<>();
-        message.put("chat_id", chatId);
         message.put("status", "ongoing");
         mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -172,36 +173,29 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 dialog.dismiss();
                 Toast.makeText(getApplicationContext(), "Start your chat", Toast.LENGTH_SHORT).show();
                 isChatActive = true;
-                listenForMessages(key);
+                listenForMessages(chatId);
                 Log.d(TAG, "chat created");
             }
         });
     }
 
     private void listenForStatusChange(final String chat_Id) {
-        DatabaseReference mRef = mDatabaseRef.child("ongoing_chats");
-        mRef.orderByChild("chat_id")
-                .equalTo(chat_Id).
-                addValueEventListener(new ValueEventListener() {
+        DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chat_Id).child("status");
+        mRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.getChildrenCount() > 0) {
-                            //Chat room available
-                            for (DataSnapshot chat : snapshot.getChildren()) {
-                                String status = chat.child("status").getValue().toString();
-                                if (status.contentEquals("waiting")){
-                                    dialog.show();
-                                }else if (status.contentEquals("ongoing")){
-                                    dialog.dismiss();
-                                    Toast.makeText(getApplicationContext(), "Start your chat", Toast.LENGTH_SHORT).show();
-                                    isChatActive = true;
-                                    listenForMessages(chat.getKey());
-                                }else if (status.contentEquals("finish")){
-                                    isChatActive = false;
-                                    chatFinished();
-                                }
-                                break;
-                            }
+                        String status = snapshot.getValue().toString();
+                        if (status.contentEquals("waiting")){
+                            dialog.show();
+                        }else if (status.contentEquals("ongoing")){
+                            disclaimer.setVisibility(View.GONE);
+                            dialog.dismiss();
+                            Toast.makeText(getApplicationContext(), "Start your chat", Toast.LENGTH_SHORT).show();
+                            isChatActive = true;
+                            listenForMessages(chatId);
+                        }else if (status.contentEquals("finish")){
+                            isChatActive = false;
+                            chatFinished();
                         }
                     }
 
@@ -238,23 +232,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-       /* mRef.child("messages").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                 else {
-                    if (!messages.isEmpty()) {
-                        //Chat exit
-                        //  isChatActive = false;
-                       // chatFinished();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
     }
 
     private void chatFinished() {
@@ -278,97 +255,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         messageField.setText("");
         Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(messages.size() - 1);
 
-        final DatabaseReference mRef = mDatabaseRef.child("ongoing_chats");
-        mRef.orderByChild("chat_id").equalTo(chatId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot data : snapshot.getChildren()){
-                    Map<String, String> message = new HashMap<>();
-                    message.put("sender", currentUser.getUid());
-                    message.put("message", messageText);
-                    mRef.child(data.getKey()).child("messages").push().setValue(message)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    Log.d(TAG, "message sent");
-                                }
-                            });
-
-                    break;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-
-    /*private void addUserInWaitingRoom() {
-        //Add user in chat waiting room
-        DatabaseReference mRef = mDatabaseRef.child("text_chat_waiting").push().child("user_id");
-        mRef.setValue(currentUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Log.d(TAG, "User added");
-                checkForPartner();
-            }
-        });
-    }
-
-    private void checkForPartner() {
-        DatabaseReference mRef = mDatabaseRef.child("text_chat_waiting");
-        mRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getChildrenCount() == 1) {
-                    //Wait
-                    try {
-                        dialog.show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        final DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chatId);
+        Map<String, String> message = new HashMap<>();
+        message.put("sender", currentUser.getUid());
+        message.put("message", messageText);
+        mRef.child("messages").push().setValue(message)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d(TAG, "message sent");
                     }
-                } else if (snapshot.getChildrenCount() > 1) {
-                    //Start chat
-                    List<String> users = new ArrayList<>();
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        users.add(child.child("user_id").getValue().toString());
-                    }
-                    //Start chat
-                    startChat(users);
-                } else {
-                    //No data found
-                    dialog.dismiss();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d(TAG, error.getMessage());
-            }
-        });
+                });
     }
-
-    private void startChat(final List<String> users) {
-        Toast.makeText(this, "Chat starting", Toast.LENGTH_LONG).show();
-        isChatActive = true;
-        chatId = users.get(0) + users.get(1);
-        disclaimer.setVisibility(View.GONE);
-        dialog.dismiss();
-        listenForMessages(mDatabaseRef.child("ongoing_chat").child(users.get(0) + users.get(1)));
-        for (String user : users) {
-            removeUserFromWaiting(user);
-        }
-    }
-
-
-
-
-
-    */
 
     @Override
     public void onClick(View v) {
