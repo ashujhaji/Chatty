@@ -1,6 +1,7 @@
 package com.chatty.app.activity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -58,13 +59,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        init();
-        setToolbar();
 
         //Get database reference
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        init();
+        setToolbar();
 
         //set recyclerview
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -88,7 +90,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void init() {
         dialog = new ProgressDialog(this);
-        dialog.setCancelable(false);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                removeUserFromWaiting(currentUser.getUid());
+                finish();
+            }
+        });
         dialog.setMessage("Searching for chat partner");
         dialog.show();
 
