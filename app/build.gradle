@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
@@ -10,12 +11,12 @@ android {
     }
 
     defaultConfig {
-        applicationId "org.appspot.apprtc"
+        applicationId "com.chatty.app"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-        testApplicationId "org.appspot.apprtc.test"
+        testApplicationId "com.chatty.app.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
     buildTypes {
@@ -37,6 +38,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    implementation 'com.google.firebase:firebase-auth:19.3.2'
+    implementation 'com.google.firebase:firebase-database:19.3.1'
     compile files('libs/libjingle_peerconnection_java.jar')
     compile files('libs/base_java.jar')
     compile files('libs/autobanh.jar')

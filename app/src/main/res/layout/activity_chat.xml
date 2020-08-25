@@ -49,6 +49,7 @@
                     android:background="@android:color/transparent"
                     android:hint="Type here..."
                     android:minHeight="@dimen/sixty_dp"
+                    android:id="@+id/messageField"
                     android:padding="@dimen/fifteen_dp"
                     android:textSize="@dimen/twelve_sp" />
 
@@ -60,6 +61,7 @@
                     android:layout_margin="@dimen/five_dp"
                     android:background="@drawable/bg_circle_purple"
                     android:padding="@dimen/ten_dp"
+                    android:id="@+id/send"
                     app:srcCompat="@drawable/ic_send_message" />
             </RelativeLayout>
         </LinearLayout>
