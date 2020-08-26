@@ -901,14 +901,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
   private void removeCall(String chatId) {
         if (!chatId.isEmpty()) {
             DatabaseReference mRef = FirebaseDatabase.getInstance().getReference().child("ongoing_calls").child(chatId);
-            Map<String, String> message = new HashMap<>();
-            message.put("status", "finish");
-            mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-
-                }
-            });
+            mRef.removeValue();
         }
     }
 }
