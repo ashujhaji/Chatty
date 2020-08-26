@@ -25,7 +25,7 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import com.chatty.app.CallActivity;
-import com.chatty.app.Constant;
+import com.chatty.app.util.Constant;
 import com.chatty.app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

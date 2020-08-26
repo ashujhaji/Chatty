@@ -1,5 +1,6 @@
-package com.chatty.app;
+package com.chatty.app.util;
 
+import com.chatty.app.R;
 import com.chatty.app.model.ChatOptions;
 
 import java.util.ArrayList;

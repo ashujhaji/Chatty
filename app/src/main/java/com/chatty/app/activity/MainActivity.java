@@ -16,7 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chatty.app.Constant;
+import com.chatty.app.util.Constant;
 import com.chatty.app.R;
 import com.chatty.app.adapter.MainAdapter;
 
