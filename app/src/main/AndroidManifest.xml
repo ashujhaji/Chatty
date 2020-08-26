@@ -24,7 +24,7 @@
         android:theme="@style/AppTheme.NoActionBar">
 
         <activity
-            android:name="com.chatty.app.ConnectActivity"
+            android:name="com.chatty.app.activity.SplashActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>

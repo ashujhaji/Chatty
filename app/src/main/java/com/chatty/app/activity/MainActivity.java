@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +21,7 @@ import com.chatty.app.CallActivity;
 import com.chatty.app.Constant;
 import com.chatty.app.R;
 import com.chatty.app.adapter.MainAdapter;
+import com.chatty.app.fragment.CallConnectionFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -90,8 +92,7 @@ public class MainActivity extends AppCompatActivity {
     public void checkForCameraPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent(this, CallActivity.class);
-            startActivity(intent);
+            startCall();
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.CAMERA)) {
             Toast.makeText(this, "App needs camera permission", Toast.LENGTH_SHORT).show();
@@ -114,13 +115,20 @@ public class MainActivity extends AppCompatActivity {
         } else if (requestCode == REQUEST_RECORD_CAMERA_PERMISSION) {
             if (permissions.length == 1 && grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent intent = new Intent(this, CallActivity.class);
-                startActivity(intent);
+                startCall();
             } else {
                 Toast.makeText(this, "App needs camera permission", Toast.LENGTH_SHORT).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    private void startCall(){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(android.R.id.content,new CallConnectionFragment());
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.addToBackStack(CallConnectionFragment.class.getSimpleName());
+        transaction.commit();
     }
 }
