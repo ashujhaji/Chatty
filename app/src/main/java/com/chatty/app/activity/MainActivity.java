@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recyclerView);
+
     }
 
     private void setToolbar() {
