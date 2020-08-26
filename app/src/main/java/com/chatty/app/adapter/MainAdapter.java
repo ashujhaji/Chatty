@@ -63,7 +63,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     if (getAdapterPosition()==0){
-                        ((MainActivity) context).checkForPermission();
+                        ((MainActivity) context).checkForRecordPermission();
                     }else if (getAdapterPosition()==1){
                         Intent intent = new Intent(context, ChatActivity.class);
                         context.startActivity(intent);

@@ -136,7 +136,7 @@ public class RoomParametersFetcher {
           break;
         }
       }
-	  if (!isTurnPresent) {
+	  /*if (!isTurnPresent) {
 		LinkedList<PeerConnection.IceServer> iceServersOverride =
 			  iceServersFromTurnOverrideJSON(roomJson.getString("turn_server_override"));
 		  isTurnPresent = false;
@@ -148,7 +148,7 @@ public class RoomParametersFetcher {
 			  break;
 			}
 		  }   
-	  }		  
+	  }		*/
       // Request TURN servers.
       if (!isTurnPresent) {
         LinkedList<PeerConnection.IceServer> turnServers =

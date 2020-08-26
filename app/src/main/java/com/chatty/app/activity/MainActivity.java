@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MainAdapter adapter;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
+    private static final int REQUEST_RECORD_CAMERA_PERMISSION = 2;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,11 +74,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    public void checkForPermission() {
+    public void checkForRecordPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent(this, CallActivity.class);
-            startActivity(intent);
+            checkForCameraPermission();
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.RECORD_AUDIO)) {
             Toast.makeText(this, "App needs record audio permission", Toast.LENGTH_SHORT).show();
@@ -87,16 +87,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void checkForCameraPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(this, CallActivity.class);
+            startActivity(intent);
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.CAMERA)) {
+            Toast.makeText(this, "App needs camera permission", Toast.LENGTH_SHORT).show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
+                    REQUEST_RECORD_CAMERA_PERMISSION);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
             if (permissions.length == 1 && grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkForCameraPermission();
+            } else {
+                Toast.makeText(this, "App needs record audio permission", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_RECORD_CAMERA_PERMISSION) {
+            if (permissions.length == 1 && grantResults.length == 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent(this, CallActivity.class);
                 startActivity(intent);
             } else {
-                Toast.makeText(this, "App needs record audio permission", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "App needs camera permission", Toast.LENGTH_SHORT).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
