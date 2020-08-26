@@ -46,7 +46,7 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".activity.ConnectActivity"/>
         <activity android:name="com.chatty.app.activity.MainActivity"/>
         <activity android:name="com.chatty.app.activity.ChatActivity"/>
         <activity

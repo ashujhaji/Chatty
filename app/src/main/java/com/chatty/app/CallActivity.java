@@ -29,13 +29,22 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.lang.RuntimeException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.chatty.app.PeerConnectionClient.DataChannelParameters;
 import com.chatty.app.PeerConnectionClient.PeerConnectionParameters;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.webrtc.Camera1Enumerator;
 import org.webrtc.Camera2Enumerator;
@@ -61,6 +70,7 @@ import org.webrtc.VideoRenderer;
 public class CallActivity extends Activity implements AppRTCClient.SignalingEvents,
                                                       PeerConnectionClient.PeerConnectionEvents,
                                                       CallFragment.OnCallEvents {
+  public String chatId = "";
   public static final String EXTRA_ROOMID = "org.appspot.apprtc.ROOMID";
   public static final String EXTRA_LOOPBACK = "org.appspot.apprtc.LOOPBACK";
   public static final String EXTRA_VIDEO_CALL = "org.appspot.apprtc.VIDEO_CALL";
@@ -259,6 +269,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
       return;
     }
 
+    chatId = intent.getStringExtra("chat_id");
     boolean loopback = intent.getBooleanExtra(EXTRA_LOOPBACK, false);
     boolean tracing = intent.getBooleanExtra(EXTRA_TRACING, false);
 
@@ -435,6 +446,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     }
     activityRunning = false;
     rootEglBase.release();
+    removeCall(chatId);
     super.onDestroy();
   }
 
@@ -885,4 +897,18 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
   public void onPeerConnectionError(final String description) {
     reportError(description);
   }
+
+  private void removeCall(String chatId) {
+        if (!chatId.isEmpty()) {
+            DatabaseReference mRef = FirebaseDatabase.getInstance().getReference().child("ongoing_calls").child(chatId);
+            Map<String, String> message = new HashMap<>();
+            message.put("status", "finish");
+            mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                }
+            });
+        }
+    }
 }

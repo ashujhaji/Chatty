@@ -13,15 +13,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chatty.app.CallActivity;
 import com.chatty.app.Constant;
 import com.chatty.app.R;
 import com.chatty.app.adapter.MainAdapter;
-import com.chatty.app.fragment.CallConnectionFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -125,10 +122,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startCall(){
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        Intent intent = new Intent(this, ConnectActivity.class);
+        startActivity(intent);
+/*        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(android.R.id.content,new CallConnectionFragment());
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.addToBackStack(CallConnectionFragment.class.getSimpleName());
-        transaction.commit();
+        transaction.commit();*/
     }
 }
