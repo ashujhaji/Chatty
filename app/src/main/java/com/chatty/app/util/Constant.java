@@ -1,5 +1,9 @@
 package com.chatty.app.util;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+
 import com.chatty.app.R;
 import com.chatty.app.model.ChatOptions;
 
@@ -25,6 +29,11 @@ public class Constant {
         }
         String saltStr = salt.toString();
         return saltStr;
+    }
 
+    public static void openPlaystore(Context context){
+        Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=" + context.getPackageName());
+        Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+        context.startActivity(intent);
     }
 }

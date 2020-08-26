@@ -49,7 +49,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_rate:
+            case R.id.menu_rate:{
+                Constant.openPlaystore(this);
+                return true;
+            }
 
             case R.id.menu_share:
 
