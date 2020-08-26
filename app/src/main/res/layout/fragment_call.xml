@@ -4,13 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/buttons_call_container"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
         android:layout_above="@+id/capture_format_text_call"
         android:layout_centerHorizontal="true"
+        android:layout_marginStart="@dimen/ten_dp"
+        android:layout_marginEnd="@dimen/ten_dp"
         android:layout_marginBottom="32dp"
         android:orientation="horizontal">
 
@@ -20,15 +22,17 @@
             android:layout_height="48dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/ic_flip"
-            android:contentDescription="@string/switch_camera" />
+            android:contentDescription="@string/switch_camera"
+            android:visibility="gone" />
 
         <ImageButton
-            android:id="@+id/button_call_disconnect"
+            android:id="@+id/button_call_toggle_mic"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/ic_call"
-            android:contentDescription="@string/disconnect_call" />
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/ic_mic"
+            android:contentDescription="@string/toggle_mic" />
+
 
         <ImageButton
             android:id="@+id/button_call_scaling_mode"
@@ -39,13 +43,15 @@
             android:visibility="gone" />
 
         <ImageButton
-            android:id="@+id/button_call_toggle_mic"
+            android:id="@+id/button_call_disconnect"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/ic_mic"
-            android:contentDescription="@string/toggle_mic" />
-    </LinearLayout>
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ic_call"
+            android:contentDescription="@string/disconnect_call" />
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/capture_format_text_call"

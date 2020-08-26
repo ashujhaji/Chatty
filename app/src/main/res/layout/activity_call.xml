@@ -5,27 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/grad_call">
-
-    <!--<com.chatty.app.PercentFrameLayout
-        android:id="@+id/remote_video_layout"
+    <include
+        layout="@layout/layout_ad"/>
+    <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/remote_video_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </com.chatty.app.PercentFrameLayout>
-
-    <com.chatty.app.PercentFrameLayout
-        android:id="@+id/local_video_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/local_video_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </com.chatty.app.PercentFrameLayout>-->
-
+        android:layout_height="wrap_content"
+        android:padding="@dimen/thirty_dp"
+        android:text="Please be polite and respect the person. Start with a good gesture"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:layout_centerVertical="true"
+        android:textSize="@dimen/eighteen_sp"
+        android:textStyle="bold"/>
     <FrameLayout
         android:id="@+id/call_fragment_container"
         android:layout_width="match_parent"
