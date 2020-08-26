@@ -135,13 +135,13 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
   private AppRTCClient.SignalingParameters signalingParameters;
   private AppRTCAudioManager audioManager = null;
   private EglBase rootEglBase;
-  private SurfaceViewRenderer localRender;
-  private SurfaceViewRenderer remoteRenderScreen;
+ // private SurfaceViewRenderer localRender;
+ // private SurfaceViewRenderer remoteRenderScreen;
   private VideoFileRenderer videoFileRenderer;
   private final List<VideoRenderer.Callbacks> remoteRenderers =
       new ArrayList<VideoRenderer.Callbacks>();
-  private PercentFrameLayout localRenderLayout;
-  private PercentFrameLayout remoteRenderLayout;
+ // private PercentFrameLayout localRenderLayout;
+  //private PercentFrameLayout remoteRenderLayout;
   private ScalingType scalingType;
   private Toast logToast;
   private boolean commandLineRun;
@@ -183,10 +183,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     scalingType = ScalingType.SCALE_ASPECT_FILL;
 
     // Create UI controls.
-    localRender = (SurfaceViewRenderer) findViewById(R.id.local_video_view);
-    remoteRenderScreen = (SurfaceViewRenderer) findViewById(R.id.remote_video_view);
-    localRenderLayout = (PercentFrameLayout) findViewById(R.id.local_video_layout);
-    remoteRenderLayout = (PercentFrameLayout) findViewById(R.id.remote_video_layout);
     callFragment = new CallFragment();
     hudFragment = new HudFragment();
 
@@ -198,15 +194,10 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
       }
     };
 
-    localRender.setOnClickListener(listener);
-    remoteRenderScreen.setOnClickListener(listener);
-    remoteRenderers.add(remoteRenderScreen);
-
     final Intent intent = getIntent();
 
     // Create video renderers.
     rootEglBase = EglBase.create();
-    localRender.init(rootEglBase.getEglBaseContext(), null);
     String saveRemoteVideoToFile = intent.getStringExtra(EXTRA_SAVE_REMOTE_VIDEO_TO_FILE);
 
     // When saveRemoteVideoToFile is set we save the video from the remote to a file.
@@ -222,12 +213,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             "Failed to open video file for output: " + saveRemoteVideoToFile, e);
       }
     }
-    remoteRenderScreen.init(rootEglBase.getEglBaseContext(), null);
-
-    localRender.setZOrderMediaOverlay(true);
-    localRender.setEnableHardwareScaler(true /* enabled */);
-    remoteRenderScreen.setEnableHardwareScaler(true /* enabled */);
-    updateVideoView();
 
     // Check for mandatory permissions.
     for (String permission : MANDATORY_PERMISSIONS) {
@@ -456,7 +441,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
   @Override
   public void onVideoScalingSwitch(ScalingType scalingType) {
     this.scalingType = scalingType;
-    updateVideoView();
   }
 
   @Override
@@ -494,26 +478,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     ft.commit();
   }
 
-  private void updateVideoView() {
-    remoteRenderLayout.setPosition(REMOTE_X, REMOTE_Y, REMOTE_WIDTH, REMOTE_HEIGHT);
-    remoteRenderScreen.setScalingType(scalingType);
-    remoteRenderScreen.setMirror(false);
-
-    if (iceConnected) {
-      localRenderLayout.setPosition(
-          LOCAL_X_CONNECTED, LOCAL_Y_CONNECTED, LOCAL_WIDTH_CONNECTED, LOCAL_HEIGHT_CONNECTED);
-      localRender.setScalingType(ScalingType.SCALE_ASPECT_FIT);
-    } else {
-      localRenderLayout.setPosition(
-          LOCAL_X_CONNECTING, LOCAL_Y_CONNECTING, LOCAL_WIDTH_CONNECTING, LOCAL_HEIGHT_CONNECTING);
-      localRender.setScalingType(scalingType);
-    }
-    localRender.setMirror(true);
-
-    localRender.requestLayout();
-    remoteRenderScreen.requestLayout();
-  }
-
   private void startCall() {
     if (appRtcClient == null) {
       Log.e(TAG, "AppRTC client is not allocated for a call.");
@@ -549,8 +513,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
       Log.w(TAG, "Call is connected in closed or error state");
       return;
     }
-    // Update video view.
-    updateVideoView();
     // Enable statistics callback.
     peerConnectionClient.enableStatsEvents(true, STAT_CALLBACK_PERIOD);
   }
@@ -571,17 +533,9 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
       peerConnectionClient.close();
       peerConnectionClient = null;
     }
-    if (localRender != null) {
-      localRender.release();
-      localRender = null;
-    }
     if (videoFileRenderer != null) {
       videoFileRenderer.release();
       videoFileRenderer = null;
-    }
-    if (remoteRenderScreen != null) {
-      remoteRenderScreen.release();
-      remoteRenderScreen = null;
     }
     if (audioManager != null) {
       audioManager.close();
@@ -688,12 +642,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     signalingParameters = params;
     logAndToast("Creating peer connection, delay=" + delta + "ms");
-    VideoCapturer videoCapturer = null;
-    if (peerConnectionParameters.videoCallEnabled) {
-      videoCapturer = createVideoCapturer();
-    }
-    peerConnectionClient.createPeerConnection(rootEglBase.getEglBaseContext(), localRender,
-        remoteRenderers, videoCapturer, signalingParameters);
+    peerConnectionClient.createPeerConnection(rootEglBase.getEglBaseContext(), null,
+        remoteRenderers, null, signalingParameters);
 
     if (signalingParameters.initiator) {
       logAndToast("Creating OFFER...");
@@ -810,10 +760,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
           } else {
             appRtcClient.sendAnswerSdp(sdp);
           }
-        }
-        if (peerConnectionParameters.videoMaxBitrate > 0) {
-          Log.d(TAG, "Set video maximum bitrate: " + peerConnectionParameters.videoMaxBitrate);
-          peerConnectionClient.setVideoMaxBitrate(peerConnectionParameters.videoMaxBitrate);
         }
       }
     });

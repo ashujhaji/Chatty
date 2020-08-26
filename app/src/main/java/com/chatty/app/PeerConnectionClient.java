@@ -146,15 +146,8 @@ public class PeerConnectionClient {
    * Peer connection parameters.
    */
   public static class PeerConnectionParameters {
-    public final boolean videoCallEnabled;
     public final boolean loopback;
     public final boolean tracing;
-    public final int videoWidth;
-    public final int videoHeight;
-    public final int videoFps;
-    public final int videoMaxBitrate;
-    public final String videoCodec;
-    public final boolean videoCodecHwAcceleration;
     public final int audioStartBitrate;
     public final String audioCodec;
     public final boolean noAudioProcessing;
@@ -183,15 +176,8 @@ public class PeerConnectionClient {
         boolean noAudioProcessing, boolean aecDump, boolean useOpenSLES, boolean disableBuiltInAEC,
         boolean disableBuiltInAGC, boolean disableBuiltInNS, boolean enableLevelControl,
         DataChannelParameters dataChannelParameters) {
-      this.videoCallEnabled = videoCallEnabled;
       this.loopback = loopback;
       this.tracing = tracing;
-      this.videoWidth = videoWidth;
-      this.videoHeight = videoHeight;
-      this.videoFps = videoFps;
-      this.videoMaxBitrate = videoMaxBitrate;
-      this.videoCodec = videoCodec;
-      this.videoCodecHwAcceleration = videoCodecHwAcceleration;
       this.audioStartBitrate = audioStartBitrate;
       this.audioCodec = audioCodec;
       this.noAudioProcessing = noAudioProcessing;
@@ -271,7 +257,6 @@ public class PeerConnectionClient {
       final PeerConnectionParameters peerConnectionParameters, final PeerConnectionEvents events) {
     this.peerConnectionParameters = peerConnectionParameters;
     this.events = events;
-    videoCallEnabled = peerConnectionParameters.videoCallEnabled;
     dataChannelEnabled = peerConnectionParameters.dataChannelParameters != null;
     // Reset variables to initial states.
     this.context = null;
@@ -351,8 +336,6 @@ public class PeerConnectionClient {
           Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
           + "webrtc-trace.txt");
     }
-    Log.d(TAG,
-        "Create peer connection factory. Use video: " + peerConnectionParameters.videoCallEnabled);
     isError = false;
 
     // Initialize field trials.
@@ -360,14 +343,6 @@ public class PeerConnectionClient {
 
     // Check preferred video codec.
     preferredVideoCodec = VIDEO_CODEC_VP8;
-    if (videoCallEnabled && peerConnectionParameters.videoCodec != null) {
-      if (peerConnectionParameters.videoCodec.equals(VIDEO_CODEC_VP9)) {
-        preferredVideoCodec = VIDEO_CODEC_VP9;
-      } else if (peerConnectionParameters.videoCodec.equals(VIDEO_CODEC_H264)) {
-        preferredVideoCodec = VIDEO_CODEC_H264;
-      }
-    }
-    Log.d(TAG, "Pereferred video codec: " + preferredVideoCodec);
 
     // Check if ISAC is used by default.
     preferIsac = peerConnectionParameters.audioCodec != null
@@ -408,7 +383,7 @@ public class PeerConnectionClient {
 
     // Create peer connection factory.
     if (!PeerConnectionFactory.initializeAndroidGlobals(
-            context, true, true, peerConnectionParameters.videoCodecHwAcceleration)) {
+            context, true, true, false)) {
       events.onPeerConnectionError("Failed to initializeAndroidGlobals");
     }
     if (options != null) {
@@ -435,24 +410,6 @@ public class PeerConnectionClient {
     if (videoCapturer == null) {
       Log.w(TAG, "No camera on device. Switch to audio only call.");
       videoCallEnabled = false;
-    }
-    // Create video constraints if video call is enabled.
-    if (videoCallEnabled) {
-      videoWidth = peerConnectionParameters.videoWidth;
-      videoHeight = peerConnectionParameters.videoHeight;
-      videoFps = peerConnectionParameters.videoFps;
-
-      // If video resolution is not specified, default to HD.
-      if (videoWidth == 0 || videoHeight == 0) {
-        videoWidth = HD_VIDEO_WIDTH;
-        videoHeight = HD_VIDEO_HEIGHT;
-      }
-
-      // If fps is not specified, default to 30.
-      if (videoFps == 0) {
-        videoFps = 30;
-      }
-      Logging.d(TAG, "Capturing format: " + videoWidth + "x" + videoHeight + "@" + videoFps);
     }
 
     // Create audio constraints.
