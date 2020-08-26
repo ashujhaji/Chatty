@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chatty.app.R;
 import com.chatty.app.activity.ChatActivity;
+import com.chatty.app.activity.MainActivity;
 import com.chatty.app.model.ChatOptions;
 
 
@@ -62,8 +63,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     if (getAdapterPosition()==0){
-                        /*Intent intent = new Intent(context, ChatActivity.class);
-                        context.startActivity(intent);*/
+                        ((MainActivity) context).checkForPermission();
                     }else if (getAdapterPosition()==1){
                         Intent intent = new Intent(context, ChatActivity.class);
                         context.startActivity(intent);
