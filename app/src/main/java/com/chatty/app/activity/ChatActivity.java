@@ -89,6 +89,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
+                removeChat(chatId);
                 finish();
             }
         });

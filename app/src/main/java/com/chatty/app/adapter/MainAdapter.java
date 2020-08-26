@@ -61,14 +61,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    switch (getAdapterPosition()) {
-                        case 0: {
-
-                        }
-                        case 1: {
-                            Intent intent = new Intent(context, ChatActivity.class);
-                            context.startActivity(intent);
-                        }
+                    if (getAdapterPosition()==0){
+                        /*Intent intent = new Intent(context, ChatActivity.class);
+                        context.startActivity(intent);*/
+                    }else if (getAdapterPosition()==1){
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        context.startActivity(intent);
                     }
                 }
             });
