@@ -79,6 +79,7 @@
                     android:layout_marginEnd="@dimen/five_dp"
                     android:background="@drawable/bg_round_purple"
                     android:padding="2dp"
+                    android:gravity="center"
                     android:textColor="@color/white"
                     android:textSize="@dimen/twelve_sp" />
             </RelativeLayout>

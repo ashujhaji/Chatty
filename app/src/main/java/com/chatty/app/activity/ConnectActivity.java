@@ -1,13 +1,3 @@
-/*
- *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
- *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be found
- *  in the file PATENTS.  All contributing project authors may
- *  be found in the AUTHORS file in the root of the source tree.
- */
-
 package com.chatty.app.activity;
 
 import android.app.Activity;
@@ -25,8 +15,10 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import com.chatty.app.CallActivity;
+import com.chatty.app.util.AdHelper;
 import com.chatty.app.util.Constant;
 import com.chatty.app.R;
+import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -53,6 +45,7 @@ public class ConnectActivity extends Activity {
     private static final int REMOVE_FAVORITE_INDEX = 0;
     private static boolean commandLineRun = false;
 
+    private UnifiedNativeAdView nativeAdView;
     private SharedPreferences sharedPref;
     private String keyprefVideoCallEnabled;
     private String keyprefScreencapture;
@@ -133,19 +126,9 @@ public class ConnectActivity extends Activity {
         keyprefDataId = getString(R.string.pref_data_id_key);
 
         setContentView(R.layout.activity_connect);
-
+        nativeAdView = findViewById(R.id.nativeUnifiedAd);
+        AdHelper.loadAd(this,nativeAdView);
         checkForAvailableChat();
-
-        // If an implicit VIEW intent is launching the app, go directly to that URL.
-        /*final Intent intent = getIntent();
-        if ("android.intent.action.VIEW".equals(intent.getAction()) && !commandLineRun) {
-            boolean loopback = intent.getBooleanExtra(CallActivity.EXTRA_LOOPBACK, false);
-            int runTimeMs = intent.getIntExtra(CallActivity.EXTRA_RUNTIME, 0);
-            boolean useValuesFromIntent =
-                    intent.getBooleanExtra(CallActivity.EXTRA_USE_VALUES_FROM_INTENT, false);
-            String room = sharedPref.getString(keyprefRoom, "");
-            connectToRoom(room, true, loopback, useValuesFromIntent, runTimeMs);
-        }*/
     }
 
     private void checkForAvailableChat() {
@@ -190,39 +173,6 @@ public class ConnectActivity extends Activity {
             }
         });
     }
-
-    /*@Override
-    protected void onDestroy() {
-        super.onDestroy();
-        removeCall(chatId);
-    }*/
-
-    /*private void listenForStatusChange(final String chat_Id, final String roomId) {
-        DatabaseReference mRef = mDatabaseRef.child("ongoing_calls").child(chat_Id).child("status");
-        mRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() != null) {
-                    String status = snapshot.getValue().toString();
-                    if (status.contentEquals("waiting")) {
-                        Log.d(TAG, "waiting");
-                    } else if (status.contentEquals("ongoing")) {
-                        isChatActive = true;
-                        connectToRoom(roomId, false, false, false, 0);
-                        //  listenForMessages(chatId);
-                    } else if (status.contentEquals("finish")) {
-                        isChatActive = false;
-                        Log.d(TAG, "finish");
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d(TAG, "User added");
-            }
-        });
-    }*/
 
     private void addToChat(final String chatId, final String roomId) {
         DatabaseReference mRef = mDatabaseRef.child("ongoing_calls").child(chatId);
