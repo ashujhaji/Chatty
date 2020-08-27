@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chatty.app.util.AdHelper;
 import com.chatty.app.util.Constant;
 import com.chatty.app.R;
 import com.chatty.app.adapter.MainAdapter;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private RecyclerView recyclerView;
+    private RelativeLayout adLayout;
     private MainAdapter adapter;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
     private static final int REQUEST_RECORD_CAMERA_PERMISSION = 2;
@@ -36,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         init();
         setToolbar();
         setRecyclerView();
-
+        AdHelper.loadBannerAd(adLayout,this);
     }
 
     @Override
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recyclerView);
+        adLayout = findViewById(R.id.adLayout);
     }
 
     private void setToolbar() {
