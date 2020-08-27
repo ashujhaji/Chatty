@@ -21,12 +21,15 @@ import com.chatty.app.util.AdHelper;
 import com.chatty.app.util.Constant;
 import com.chatty.app.R;
 import com.chatty.app.adapter.MainAdapter;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private RelativeLayout adLayout;
+    private UnifiedNativeAdView nativeAdView;
     private MainAdapter adapter;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
     private static final int REQUEST_RECORD_CAMERA_PERMISSION = 2;
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         setToolbar();
         setRecyclerView();
         AdHelper.loadBannerAd(adLayout,this);
+        AdHelper.loadAd(this,nativeAdView);
     }
 
     @Override
@@ -68,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recyclerView);
         adLayout = findViewById(R.id.adLayout);
+        nativeAdView = findViewById(R.id.nativeUnifiedAd);
     }
 
     private void setToolbar() {

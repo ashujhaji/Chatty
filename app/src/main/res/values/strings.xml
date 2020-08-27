@@ -209,4 +209,5 @@
     <string name="pref_tracing_default" translatable="false">false</string>
     <string name="rate">Rate us</string>
     <string name="share">Share</string>
+    <string name="ad">Ad</string>
 </resources>
