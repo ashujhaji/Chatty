@@ -14,7 +14,7 @@
     </string>
     <string name="channel_error_title">Connection error</string>
     <string name="connecting_to">Connecting to: %1$s</string>
-    <string name="missing_url">FATAL ERROR: Missing URL to connect to.</string>
+    <string name="missing_url">Missing URL to connect to.</string>
     <string name="camera2_texture_only_error">Camera2 only supports capturing to texture. Either disable Camera2 or enable capturing to texture in the options.</string>
     <string name="ok">OK</string>
     <string name="switch_camera">Switch front/back camera</string>

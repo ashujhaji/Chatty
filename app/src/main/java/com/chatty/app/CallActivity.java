@@ -464,7 +464,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         callStartedTimeMs = System.currentTimeMillis();
 
         // Start room connection.
-        logAndToast(getString(R.string.connecting_to, roomConnectionParameters.roomUrl));
+        //logAndToast(getString(R.string.connecting_to, roomConnectionParameters.roomUrl));
         appRtcClient.connectToRoom(roomConnectionParameters);
 
         // Create and audio manager that will take care of audio routing,
@@ -532,7 +532,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             Log.e(TAG, "Critical error: " + errorMessage);
             disconnect();
         } else {
-            new AlertDialog.Builder(this)
+            Toast.makeText(getApplicationContext(),"All rooms are currently busy. Please try again",Toast.LENGTH_LONG).show();
+/*            new AlertDialog.Builder(this)
                     .setTitle(getText(R.string.channel_error_title))
                     .setMessage(errorMessage)
                     .setCancelable(false)
@@ -545,7 +546,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                                 }
                             })
                     .create()
-                    .show();
+                    .show();*/
         }
     }
 
@@ -619,12 +620,12 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         final long delta = System.currentTimeMillis() - callStartedTimeMs;
 
         signalingParameters = params;
-        logAndToast("Creating peer connection, delay=" + delta + "ms");
+        //logAndToast("Creating peer connection, delay=" + delta + "ms");
         peerConnectionClient.createPeerConnection(rootEglBase.getEglBaseContext(), null,
                 remoteRenderers, null, signalingParameters);
 
         if (signalingParameters.initiator) {
-            logAndToast("Creating OFFER...");
+            //logAndToast("Creating OFFER...");
             // Create offer. Offer SDP will be sent to answering client in
             // PeerConnectionEvents.onLocalDescription event.
             peerConnectionClient.createOffer();
@@ -665,10 +666,10 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                     Log.e(TAG, "Received remote SDP for non-initilized peer connection.");
                     return;
                 }
-                logAndToast("Received remote " + sdp.type + ", delay=" + delta + "ms");
+                //logAndToast("Received remote " + sdp.type + ", delay=" + delta + "ms");
                 peerConnectionClient.setRemoteDescription(sdp);
                 if (!signalingParameters.initiator) {
-                    logAndToast("Creating ANSWER...");
+                    //logAndToast("Creating ANSWER...");
                     // Create answer. Answer SDP will be sent to offering client in
                     // PeerConnectionEvents.onLocalDescription event.
                     peerConnectionClient.createAnswer();
@@ -732,7 +733,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             @Override
             public void run() {
                 if (appRtcClient != null) {
-                    logAndToast("Sending " + sdp.type + ", delay=" + delta + "ms");
+                    //logAndToast("Sending " + sdp.type + ", delay=" + delta + "ms");
                     if (signalingParameters.initiator) {
                         appRtcClient.sendOfferSdp(sdp);
                     } else {
@@ -773,7 +774,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                logAndToast("ICE connected, delay=" + delta + "ms");
+               // logAndToast("ICE connected, delay=" + delta + "ms");
                 iceConnected = true;
                 callConnected();
             }
@@ -785,7 +786,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                logAndToast("ICE disconnected");
+                //logAndToast("ICE disconnected");
                 iceConnected = false;
                 disconnect();
             }
