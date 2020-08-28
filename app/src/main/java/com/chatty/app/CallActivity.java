@@ -533,20 +533,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             disconnect();
         } else {
             Toast.makeText(getApplicationContext(),"All rooms are currently busy. Please try again",Toast.LENGTH_LONG).show();
-/*            new AlertDialog.Builder(this)
-                    .setTitle(getText(R.string.channel_error_title))
-                    .setMessage(errorMessage)
-                    .setCancelable(false)
-                    .setNeutralButton(R.string.ok,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                    disconnect();
-                                }
-                            })
-                    .create()
-                    .show();*/
         }
     }
 
