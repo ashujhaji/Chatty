@@ -17,11 +17,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chatty.app.util.AdHelper;
-import com.chatty.app.util.Constant;
 import com.chatty.app.R;
 import com.chatty.app.adapter.MainAdapter;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.chatty.app.util.AdHelper;
+import com.chatty.app.util.Constant;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AdHelper.getInstance().loadInterstitialAd(this,true);
+        AdHelper.getInstance().loadInterstitialAd(this, true);
         init();
         setToolbar();
         setRecyclerView();
-        AdHelper.loadBannerAd(adLayout,this);
-        AdHelper.loadAd(this,nativeAdView);
+        AdHelper.loadBannerAd(adLayout, this);
+        AdHelper.loadAd(this, nativeAdView);
     }
 
     @Override
@@ -56,14 +55,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_rate:{
+            case R.id.menu_rate: {
                 Constant.openPlaystore(this);
                 return true;
             }
 
-            case R.id.menu_share:
-
+            case R.id.menu_share: {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                String shareText = "Getting bored? Chat with new friends and make some fun. Download the app now. https://play.google.com/store/apps/details?id=" + getPackageName();
+                intent.putExtra(Intent.EXTRA_TEXT, shareText);
+                startActivity(Intent.createChooser(intent, "Share via"));
                 return true;
+
+            }
+
+
         }
         return false;
     }
@@ -133,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startCall(){
+    private void startCall() {
         Intent intent = new Intent(this, ConnectActivity.class);
         startActivity(intent);
 /*        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
