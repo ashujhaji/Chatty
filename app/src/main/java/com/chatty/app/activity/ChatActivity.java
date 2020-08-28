@@ -1,10 +1,12 @@
 package com.chatty.app.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -72,7 +74,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         setToolbar();
 
         //set recyclerview
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        layoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new ChatAdapter(messages, this));
 
         checkForAvailableChat();
@@ -147,7 +151,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d(TAG,error.getMessage());
             }
         });
     }
@@ -211,6 +215,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void listenForMessages(String key) {
+        disclaimer.setVisibility(View.GONE);
         final DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(key).child("messages");
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -255,9 +260,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void sendMessage(final String messageText) {
         //add to list
+        disclaimer.setVisibility(View.GONE);
+        hideKeyboard(this);
         messages.add(new MessagePojo(currentUser.getUid(), messageField.getText().toString()));
         messageField.setText("");
         Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(messages.size() - 1);
+        recyclerView.smoothScrollToPosition(messages.size()-1);
 
         final DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chatId);
         Map<String, String> message = new HashMap<>();
@@ -270,6 +278,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         Log.d(TAG, "message sent");
                     }
                 });
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @Override
