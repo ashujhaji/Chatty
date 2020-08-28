@@ -14,6 +14,7 @@ import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.VideoOptions;
 import com.google.android.gms.ads.formats.MediaView;
@@ -22,6 +23,17 @@ import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 
 public class AdHelper {
+
+    public static AdHelper instance;
+
+    public static synchronized AdHelper getInstance(){
+        if (instance==null){
+            instance = new AdHelper();
+        }
+        return instance;
+    }
+
+    private InterstitialAd interstitialAd;
 
     public static void loadBannerAd(RelativeLayout adLayout, Context context) {
         AdView adView = new AdView(context);
@@ -88,6 +100,27 @@ public class AdHelper {
         adView.setNativeAd(unifiedAd);
     }
 
+    public void loadInterstitialAd(Context context, final boolean show){
+        interstitialAd = new InterstitialAd(context);
+        interstitialAd.setAdUnitId(interstitialAdId());
+        interstitialAd.loadAd(new AdRequest.Builder().build());
+        interstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                if (show){
+                    interstitialAd.show();
+                }
+            }
+        });
+    }
+
+    public void showAd(){
+        if (interstitialAd!=null && interstitialAd.isLoaded()){
+            interstitialAd.show();
+        }
+    }
+
     private static String bannerAdId() {
         if (BuildConfig.DEBUG) {
             return "ca-app-pub-3940256099942544/6300978111";
@@ -99,6 +132,14 @@ public class AdHelper {
     private static String nativeAdId() {
         if (BuildConfig.DEBUG) {
             return "ca-app-pub-3940256099942544/2247696110";
+        } else {
+            return "";
+        }
+    }
+
+    private static String interstitialAdId() {
+        if (BuildConfig.DEBUG) {
+            return "ca-app-pub-3940256099942544/1033173712";
         } else {
             return "";
         }

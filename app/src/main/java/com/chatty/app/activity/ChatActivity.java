@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chatty.app.R;
 import com.chatty.app.adapter.ChatAdapter;
 import com.chatty.app.model.MessagePojo;
+import com.chatty.app.util.AdHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
@@ -59,6 +60,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        AdHelper.getInstance().loadInterstitialAd(this,false);
 
         //Get database reference
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
@@ -285,5 +288,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        AdHelper.getInstance().showAd();
     }
 }

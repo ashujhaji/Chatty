@@ -187,6 +187,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 toggleCallControlFragmentVisibility();
             }
         };
+        AdHelper.getInstance().loadInterstitialAd(this,false);
 
         final Intent intent = getIntent();
 
@@ -572,7 +573,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         if (commandLineRun || !activityRunning) {
             Log.e(TAG, "Critical error: " + errorMessage);
         } else {
-            Toast.makeText(getApplicationContext(),errorMessage,Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"All rooms are currently busy. Please try again.",Toast.LENGTH_LONG).show();
         }
         disconnect();
     }
@@ -805,5 +806,11 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             DatabaseReference mRef = FirebaseDatabase.getInstance().getReference().child("ongoing_calls").child(chatId);
             mRef.removeValue();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        AdHelper.getInstance().showAd();
     }
 }
