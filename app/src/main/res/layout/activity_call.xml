@@ -21,7 +21,7 @@
             android:textSize="@dimen/eighteen_sp"
             android:textStyle="bold"/>
         <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/av_loader"
+            android:id="@+id/ringing_view"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginEnd="8dp"
@@ -38,11 +38,23 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/five_dp"
             android:text="Ringing..."
+            android:id="@+id/ringing_text"
             android:gravity="center"
             android:textColor="@color/white"
             android:textSize="@dimen/eighteen_sp"/>
     </LinearLayout>
-
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/five_dp"
+        android:id="@+id/timer"
+        android:visibility="gone"
+        android:layout_marginBottom="120dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        android:textSize="@dimen/eighteen_sp"
+        android:textStyle="bold"/>
     <FrameLayout
         android:id="@+id/call_fragment_container"
         android:layout_width="match_parent"

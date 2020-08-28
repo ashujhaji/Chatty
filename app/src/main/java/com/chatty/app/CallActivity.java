@@ -18,8 +18,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.chatty.app.PeerConnectionClient.DataChannelParameters;
 import com.chatty.app.PeerConnectionClient.PeerConnectionParameters;
 import com.chatty.app.util.AdHelper;
@@ -128,16 +130,21 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private boolean isError;
     private boolean callControlFragmentVisible = true;
     private long callStartedTimeMs = 0;
+    private long callConnectedTimeMs = 0;
     private boolean micEnabled = true;
     private boolean screencaptureEnabled = false;
     private static Intent mediaProjectionPermissionResultData;
     private static int mediaProjectionPermissionResultCode;
+    private TextView ringingText;
+    private LottieAnimationView ringingView;
+    private TextView timerText;
 
     // Controls
     private CallFragment callFragment;
     private HudFragment hudFragment;
     private CpuMonitor cpuMonitor;
     private UnifiedNativeAdView nativeAdView;
+    private Handler timerHandler = new Handler();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -157,6 +164,10 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         iceConnected = false;
         signalingParameters = null;
         scalingType = ScalingType.SCALE_ASPECT_FILL;
+
+        ringingText = findViewById(R.id.ringing_text);
+        ringingView = findViewById(R.id.ringing_view);
+        timerText = findViewById(R.id.timer);
 
         // Create UI controls.
         callFragment = new CallFragment();
@@ -410,18 +421,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     }
 
     @Override
-    public void onCameraSwitch() {
-        if (peerConnectionClient != null) {
-            peerConnectionClient.switchCamera();
-        }
-    }
-
-    @Override
-    public void onVideoScalingSwitch(ScalingType scalingType) {
-        this.scalingType = scalingType;
-    }
-
-    @Override
     public void onCaptureFormatChange(int width, int height, int framerate) {
         if (peerConnectionClient != null) {
             peerConnectionClient.changeCaptureFormat(width, height, framerate);
@@ -485,15 +484,34 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     // Should be called from UI thread
     private void callConnected() {
-        final long delta = System.currentTimeMillis() - callStartedTimeMs;
-        Log.i(TAG, "Call connected: delay=" + delta + "ms");
+        callConnectedTimeMs = System.currentTimeMillis();
+        timerHandler.postDelayed(timer, 0);
+        showTimer();
         if (peerConnectionClient == null || isError) {
             Log.w(TAG, "Call is connected in closed or error state");
             return;
         }
-        // Enable statistics callback.
         peerConnectionClient.enableStatsEvents(true, STAT_CALLBACK_PERIOD);
     }
+
+    private void showTimer(){
+        ringingText.setVisibility(View.GONE);
+        ringingView.setVisibility(View.GONE);
+        timerText.setVisibility(View.VISIBLE);
+    }
+
+    private Runnable timer = new Runnable() {
+        @Override
+        public void run() {
+            long millis = System.currentTimeMillis() - callConnectedTimeMs;
+            int seconds = (int) (millis / 1000);
+            int minutes = seconds / 60;
+            seconds %= 60;
+            timerText.setText(String.format("%d:%02d", minutes, seconds));
+
+            timerHandler.postDelayed(this, 500);
+        }
+    };
 
     private void onAudioManagerChangedState() {
         // TODO(henrika): disable video if AppRTCAudioManager.AudioDevice.EARPIECE
@@ -502,6 +520,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     // Disconnect from remote resources, dispose of local resources, and exit.
     private void disconnect() {
+        timerHandler.removeCallbacks(timer);
         activityRunning = false;
         if (appRtcClient != null) {
             appRtcClient.disconnectFromRoom();
