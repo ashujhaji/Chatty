@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
@@ -132,6 +133,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private long callStartedTimeMs = 0;
     private long callConnectedTimeMs = 0;
     private boolean micEnabled = true;
+    private boolean speakerEnabled = true;
     private boolean screencaptureEnabled = false;
     private static Intent mediaProjectionPermissionResultData;
     private static int mediaProjectionPermissionResultCode;
@@ -145,6 +147,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private CpuMonitor cpuMonitor;
     private UnifiedNativeAdView nativeAdView;
     private Handler timerHandler = new Handler();
+    private AudioManager speakerManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -172,6 +175,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         // Create UI controls.
         callFragment = new CallFragment();
         hudFragment = new HudFragment();
+
+        speakerManager = (AudioManager)getSystemService(AUDIO_SERVICE);
 
         nativeAdView = findViewById(R.id.nativeUnifiedAd);
         AdHelper.loadAd(this, nativeAdView);
@@ -436,6 +441,23 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         return micEnabled;
     }
 
+    @Override
+    public boolean onToggleSpeaker() {
+        if (peerConnectionClient != null) {
+            speakerEnabled = !speakerEnabled;
+            speakerController(speakerEnabled);
+        }
+        return speakerEnabled;
+    }
+
+    private void speakerController(boolean enable){
+        if (enable){
+            speakerManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
+        }else{
+            speakerManager.setStreamMute(AudioManager.STREAM_SYSTEM, false);
+        }
+    }
+
     // Helper functions.
     private void toggleCallControlFragmentVisibility() {
         if (!iceConnected || !callFragment.isAdded()) {
@@ -549,10 +571,10 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private void disconnectWithErrorMessage(final String errorMessage) {
         if (commandLineRun || !activityRunning) {
             Log.e(TAG, "Critical error: " + errorMessage);
-            disconnect();
         } else {
-            Toast.makeText(getApplicationContext(),"All rooms are currently busy. Please try again",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),errorMessage,Toast.LENGTH_LONG).show();
         }
+        disconnect();
     }
 
     // Log |msg| and Toast about it.
@@ -575,47 +597,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 }
             }
         });
-    }
-
-    private VideoCapturer createVideoCapturer() {
-        VideoCapturer videoCapturer = null;
-        String videoFileAsCamera = getIntent().getStringExtra(EXTRA_VIDEO_FILE_AS_CAMERA);
-        if (videoFileAsCamera != null) {
-            try {
-                videoCapturer = new FileVideoCapturer(videoFileAsCamera);
-            } catch (IOException e) {
-                reportError("Failed to open video file for emulated camera");
-                return null;
-            }
-        } else if (screencaptureEnabled) {
-            if (mediaProjectionPermissionResultCode != Activity.RESULT_OK) {
-                reportError("User didn't give permission to capture the screen.");
-                return null;
-            }
-            return new ScreenCapturerAndroid(
-                    mediaProjectionPermissionResultData, new MediaProjection.Callback() {
-                @Override
-                public void onStop() {
-                    reportError("User revoked permission to capture the screen.");
-                }
-            });
-        } else if (useCamera2()) {
-            if (!captureToTexture()) {
-                reportError(getString(R.string.camera2_texture_only_error));
-                return null;
-            }
-
-            Logging.d(TAG, "Creating capturer using camera2 API.");
-            videoCapturer = createCameraCapturer(new Camera2Enumerator(this));
-        } else {
-            Logging.d(TAG, "Creating capturer using camera1 API.");
-            videoCapturer = createCameraCapturer(new Camera1Enumerator(captureToTexture()));
-        }
-        if (videoCapturer == null) {
-            reportError("Failed to open camera");
-            return null;
-        }
-        return videoCapturer;
     }
 
     // -----Implementation of AppRTCClient.AppRTCSignalingEvents ---------------

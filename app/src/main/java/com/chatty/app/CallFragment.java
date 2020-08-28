@@ -19,6 +19,7 @@ public class CallFragment extends Fragment {
   private View controlView;
   private ImageButton disconnectButton;
   private ImageButton toggleMuteButton;
+  private ImageButton toggleSpeaker;
   private TextView captureFormatText;
   private SeekBar captureFormatSlider;
   private OnCallEvents callEvents;
@@ -31,6 +32,7 @@ public class CallFragment extends Fragment {
     void onCallHangUp();
     void onCaptureFormatChange(int width, int height, int framerate);
     boolean onToggleMic();
+    boolean onToggleSpeaker();
   }
 
   @Override
@@ -41,6 +43,7 @@ public class CallFragment extends Fragment {
     // Create UI controls.
     disconnectButton = (ImageButton) controlView.findViewById(R.id.button_call_disconnect);
     toggleMuteButton = (ImageButton) controlView.findViewById(R.id.button_call_toggle_mic);
+    toggleSpeaker = (ImageButton) controlView.findViewById(R.id.button_call_toggle_speaker);
     captureFormatText = (TextView) controlView.findViewById(R.id.capture_format_text_call);
     captureFormatSlider = (SeekBar) controlView.findViewById(R.id.capture_format_slider_call);
 
@@ -57,6 +60,14 @@ public class CallFragment extends Fragment {
       public void onClick(View view) {
         boolean enabled = callEvents.onToggleMic();
         toggleMuteButton.setAlpha(enabled ? 1.0f : 0.3f);
+      }
+    });
+
+    toggleSpeaker.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        boolean enabled = callEvents.onToggleSpeaker();
+        toggleSpeaker.setAlpha(enabled ? 1.0f : 0.3f);
       }
     });
 

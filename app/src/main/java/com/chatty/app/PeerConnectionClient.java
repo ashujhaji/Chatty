@@ -620,21 +620,6 @@ public class PeerConnectionClient {
     });
   }
 
-  public void setVideoEnabled(final boolean enable) {
-    executor.execute(new Runnable() {
-      @Override
-      public void run() {
-        renderVideo = enable;
-        if (localVideoTrack != null) {
-          localVideoTrack.setEnabled(renderVideo);
-        }
-        if (remoteVideoTrack != null) {
-          remoteVideoTrack.setEnabled(renderVideo);
-        }
-      }
-    });
-  }
-
   public void createOffer() {
     executor.execute(new Runnable() {
       @Override
