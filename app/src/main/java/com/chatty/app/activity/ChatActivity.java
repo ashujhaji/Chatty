@@ -23,6 +23,7 @@ import com.chatty.app.R;
 import com.chatty.app.adapter.ChatAdapter;
 import com.chatty.app.model.MessagePojo;
 import com.chatty.app.util.AdHelper;
+import com.chatty.app.util.GenerateNotification;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
@@ -56,6 +57,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String chatId = "";
     private ProgressDialog dialog;
     private List<MessagePojo> messages = new ArrayList<>();
+    private boolean isActivityVisible = false;
 
 
     @Override
@@ -223,7 +225,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (snapshot.getChildrenCount() > 0) {
                     List<MessagePojo> messageList = new ArrayList<>();
                     for (DataSnapshot message : snapshot.getChildren()) {
-                        Log.d("chatTag",String.valueOf(message));
                         messageList.add(new MessagePojo(message.child("sender").getValue().toString(), message.child("message").getValue().toString()));
                     }
 
@@ -231,7 +232,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     if (!messageList.get(messageList.size() - 1).getSender().contentEquals(currentUser.getUid())) {
                         messages.add(messageList.get(messageList.size() - 1));
                         Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(messages.size() - 1);
-                        Log.d("messageTag", String.valueOf(messages.size()));
+                        if (!isActivityVisible){
+                            //send notification
+                            GenerateNotification.send("New message received",messageList.get(messageList.size() - 1).getMessage(),ChatActivity.this);
+                        }
                     }
                 }
             }
@@ -241,6 +245,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+    }
+
+    private void sendNotification(String title,String body){
+        GenerateNotification.send(title,body,this);
     }
 
     private void chatFinished() {
@@ -311,5 +319,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onBackPressed() {
         super.onBackPressed();
         AdHelper.getInstance().showAd();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActivityVisible = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isActivityVisible = true;
     }
 }
