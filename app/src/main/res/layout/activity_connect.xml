@@ -9,7 +9,7 @@
         android:layout_height="?actionBarSize"
         android:gravity="center_vertical"
         android:padding="@dimen/ten_dp"
-        android:text="Chatty"
+        android:text="@string/app_name"
         android:textSize="@dimen/twenty_one_sp"
         android:textStyle="bold" />
 
