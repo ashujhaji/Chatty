@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
@@ -148,10 +149,13 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private UnifiedNativeAdView nativeAdView;
     private Handler timerHandler = new Handler();
     private AudioManager speakerManager;
+    private MediaPlayer mediaPlayer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mediaPlayer = MediaPlayer.create(this,R.raw.phone_ringing);
+        mediaPlayer.setLooping(true);
         Thread.setDefaultUncaughtExceptionHandler(new UnhandledExceptionHandler(this));
 
         // Set window styles for fullscreen-window size. Needs to be done before
@@ -479,6 +483,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     }
 
     private void startCall() {
+        mediaPlayer.start();
         if (appRtcClient == null) {
             Log.e(TAG, "AppRTC client is not allocated for a call.");
             return;
@@ -507,6 +512,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     // Should be called from UI thread
     private void callConnected() {
+        mediaPlayer.stop();
         callConnectedTimeMs = System.currentTimeMillis();
         timerHandler.postDelayed(timer, 0);
         showTimer();

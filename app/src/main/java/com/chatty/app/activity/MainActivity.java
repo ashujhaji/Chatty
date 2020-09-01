@@ -3,6 +3,7 @@ package com.chatty.app.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private MainAdapter adapter;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
     private static final int REQUEST_RECORD_CAMERA_PERMISSION = 2;
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
