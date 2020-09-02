@@ -21,10 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-
-
-import lets.digi.talk.R;
-import lets.digi.talk.util.AdHelper;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,6 +41,8 @@ import org.webrtc.VideoRenderer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import lets.digi.talk.util.AdHelper;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -175,7 +173,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         callFragment = new CallFragment();
         hudFragment = new HudFragment();
 
-        speakerManager = (AudioManager)getSystemService(AUDIO_SERVICE);
+        speakerManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
         nativeAdView = findViewById(R.id.nativeUnifiedAd);
         AdHelper.loadAd(this, nativeAdView);
@@ -186,7 +184,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 toggleCallControlFragmentVisibility();
             }
         };
-        AdHelper.getInstance().loadInterstitialAd(this,false);
+        AdHelper.getInstance().loadInterstitialAd(this, false);
 
         final Intent intent = getIntent();
 
@@ -409,6 +407,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     @Override
     protected void onDestroy() {
+        mediaPlayer.stop();
         disconnect();
         if (logToast != null) {
             logToast.cancel();
@@ -450,10 +449,10 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         return speakerEnabled;
     }
 
-    private void speakerController(boolean enable){
-        if (enable){
+    private void speakerController(boolean enable) {
+        if (enable) {
             speakerManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
-        }else{
+        } else {
             speakerManager.setStreamMute(AudioManager.STREAM_SYSTEM, false);
         }
     }
@@ -518,7 +517,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         peerConnectionClient.enableStatsEvents(true, STAT_CALLBACK_PERIOD);
     }
 
-    private void showTimer(){
+    private void showTimer() {
         ringingText.setVisibility(View.GONE);
         ringingView.setVisibility(View.GONE);
         timerText.setVisibility(View.VISIBLE);
@@ -574,7 +573,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         if (commandLineRun || !activityRunning) {
             Log.e(TAG, "Critical error: " + errorMessage);
         } else {
-            Toast.makeText(getApplicationContext(),"All rooms are currently busy. Please try again.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "All rooms are currently busy. Please try again.", Toast.LENGTH_LONG).show();
         }
         disconnect();
     }
@@ -762,7 +761,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-               // logAndToast("ICE connected, delay=" + delta + "ms");
+                // logAndToast("ICE connected, delay=" + delta + "ms");
                 iceConnected = true;
                 callConnected();
             }
