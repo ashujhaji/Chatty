@@ -3,9 +3,11 @@ package com.chatty.app.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,6 +61,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private List<MessagePojo> messages = new ArrayList<>();
     private boolean isActivityVisible = false;
 
+    int MIN_KEYBOARD_HEIGHT_PX = 150;
+    int lastVisibleDecorViewHeight = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,9 +78,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         init();
         setToolbar();
+        initKeyBoardListener(this);
 
         //set recyclerview
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new ChatAdapter(messages, this));
@@ -230,8 +235,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                     //Notify adapter
                     if (!messageList.get(messageList.size() - 1).getSender().contentEquals(currentUser.getUid())) {
-                        messages.add(messageList.get(messageList.size() - 1));
-                        Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(messages.size() - 1);
+                        messages.add(0,messageList.get(messageList.size() - 1));
+                        Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(0);
+                        recyclerView.smoothScrollToPosition(0);
                         if (!isActivityVisible){
                             //send notification
                             GenerateNotification.send("New message received",messageList.get(messageList.size() - 1).getMessage(),ChatActivity.this);
@@ -245,10 +251,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-    }
-
-    private void sendNotification(String title,String body){
-        GenerateNotification.send(title,body,this);
     }
 
     private void chatFinished() {
@@ -269,11 +271,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void sendMessage(final String messageText) {
         //add to list
         disclaimer.setVisibility(View.GONE);
-        hideKeyboard(this);
-        messages.add(new MessagePojo(currentUser.getUid(), messageField.getText().toString()));
+        messages.add(0,new MessagePojo(currentUser.getUid(), messageField.getText().toString()));
         messageField.setText("");
-        Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(messages.size() - 1);
-        recyclerView.smoothScrollToPosition(messages.size()-1);
+        Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(0);
+        recyclerView.smoothScrollToPosition(0);
 
         final DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chatId);
         Map<String, String> message = new HashMap<>();
@@ -331,5 +332,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         isActivityVisible = true;
+    }
+
+    private void initKeyBoardListener(Activity activity) {
+
+        final View decorView = activity.getWindow().getDecorView();
+        final Rect windowVisibleDisplayFrame = new Rect();
+        decorView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                decorView.getWindowVisibleDisplayFrame(windowVisibleDisplayFrame);
+                int visibleDecorViewHeight = windowVisibleDisplayFrame.height();
+                if (lastVisibleDecorViewHeight != 0) {
+                    if (lastVisibleDecorViewHeight > visibleDecorViewHeight + MIN_KEYBOARD_HEIGHT_PX) {
+                        recyclerView.smoothScrollToPosition(0);
+                    } else if (lastVisibleDecorViewHeight + MIN_KEYBOARD_HEIGHT_PX < visibleDecorViewHeight) {
+                        recyclerView.smoothScrollToPosition(0);
+                    }
+                }
+                lastVisibleDecorViewHeight = visibleDecorViewHeight;
+            }
+        });
     }
 }
