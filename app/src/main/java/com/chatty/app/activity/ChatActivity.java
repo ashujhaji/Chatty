@@ -238,7 +238,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         messages.add(0,messageList.get(messageList.size() - 1));
                         Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(0);
                         recyclerView.smoothScrollToPosition(0);
-                        if (!isActivityVisible){
+                        if (!isActivityVisible && isChatActive){
                             //send notification
                             GenerateNotification.send("New message received",messageList.get(messageList.size() - 1).getMessage(),ChatActivity.this);
                         }
