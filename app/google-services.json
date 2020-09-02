@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:307356614949:android:10a809364966d9773ddacc",
+        "mobilesdk_app_id": "1:307356614949:android:399d14111d0161ae3ddacc",
         "android_client_info": {
-          "package_name": "com.chatty.app"
+          "package_name": "lets.digi.talk"
         }
       },
       "oauth_client": [
