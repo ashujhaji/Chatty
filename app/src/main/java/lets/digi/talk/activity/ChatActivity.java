@@ -1,9 +1,11 @@
 package lets.digi.talk.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -52,6 +54,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView recyclerView;
     private EditText messageField;
     private ImageView send;
+    private ImageView newChat;
     private TextView disclaimer;
     private DatabaseReference mDatabaseRef;
     private FirebaseAuth mAuth;
@@ -111,6 +114,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         dialog.setMessage("Searching for chat partner");
         dialog.show();
 
+        newChat = findViewById(R.id.new_chat);
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recyclerView);
         messageField = findViewById(R.id.messageField);
@@ -223,6 +227,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void listenForMessages(String key) {
+        newChat.setOnClickListener(this);
         disclaimer.setVisibility(View.GONE);
         final DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(key).child("messages");
         mRef.addValueEventListener(new ValueEventListener() {
@@ -314,6 +319,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 sendMessage(messageField.getText().toString());
                 break;
             }
+            case R.id.new_chat:{
+                showNewChatDialog();
+            }
         }
     }
 
@@ -354,5 +362,40 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 lastVisibleDecorViewHeight = visibleDecorViewHeight;
             }
         });
+    }
+
+    private void showNewChatDialog(){
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(this);
+        }
+        builder.setTitle("New Chat")
+                .setMessage("This Do you really want to switch to new chat?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!chatId.isEmpty()) {
+                            DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chatId);
+                            Map<String, String> message = new HashMap<>();
+                            message.put("status", "finish");
+                            mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    isChatActive = false;
+                                    checkForAvailableChat();
+                                }
+                            });
+                        }
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }
