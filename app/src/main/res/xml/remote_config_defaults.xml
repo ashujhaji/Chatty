@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>banner_ad_id</key>
+        <value>""</value>
+    </entry>
+    <entry>
+        <key>native_ad_id</key>
+        <value>""</value>
+    </entry>
+    <entry>
+        <key>interstitial_ad_id</key>
+        <value>""</value>
+    </entry>
+</defaultsMap>

@@ -126,7 +126,7 @@ public class AdHelper {
         if (BuildConfig.DEBUG) {
             return "ca-app-pub-3940256099942544/6300978111";
         } else {
-            return "";
+            return BANNER_AD_ID;
         }
     }
 
@@ -134,7 +134,7 @@ public class AdHelper {
         if (BuildConfig.DEBUG) {
             return "ca-app-pub-3940256099942544/2247696110";
         } else {
-            return "";
+            return NATIVE_AD_ID;
         }
     }
 
@@ -142,7 +142,11 @@ public class AdHelper {
         if (BuildConfig.DEBUG) {
             return "ca-app-pub-3940256099942544/1033173712";
         } else {
-            return "";
+            return INTERSTITIAL_AD_ID;
         }
     }
+
+    public static String BANNER_AD_ID = "";
+    public static String NATIVE_AD_ID = "";
+    public static String INTERSTITIAL_AD_ID = "";
 }
