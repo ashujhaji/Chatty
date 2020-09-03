@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:id="@+id/toolbar"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/ten_dp">
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/forty_five_dp"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/thirteen_sp"
+                android:text="Rate us"
+                android:id="@+id/rate_us"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/forty_five_dp"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/thirteen_sp"
+                android:text="Share"
+                android:id="@+id/share"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/forty_five_dp"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/thirteen_sp"
+                android:text="Term of uses"
+                android:id="@+id/term_of_uses"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/forty_five_dp"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/thirteen_sp"
+                android:text="Privacy policy"
+                android:id="@+id/privacy_policy"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
