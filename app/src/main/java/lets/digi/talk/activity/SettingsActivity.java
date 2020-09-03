@@ -1,6 +1,8 @@
 package lets.digi.talk.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -8,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import lets.digi.talk.R;
 import lets.digi.talk.util.Constant;
@@ -64,11 +67,19 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 startActivity(Intent.createChooser(intent, "Share via"));
             }
             case R.id.term_of_uses:{
-
+                openUrl(this,Uri.parse(""));
             }
             case R.id.privacy_policy:{
-
+                openUrl(this,Uri.parse("https://vidakrtk.blogspot.com/2020/08/privacy-policy.html"));
             }
         }
+    }
+
+    private void openUrl(Context context, Uri uri){
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder()
+                .enableUrlBarHiding();
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        customTabsIntent.launchUrl(context, uri);
     }
 }

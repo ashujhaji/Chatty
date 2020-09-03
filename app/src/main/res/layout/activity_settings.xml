@@ -7,7 +7,8 @@
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        android:id="@+id/toolbar"/>
+        android:id="@+id/toolbar"
+        android:background="@color/white"/>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -23,28 +24,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/forty_five_dp"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/thirteen_sp"
+                android:textSize="@dimen/fifteen_sp"
                 android:text="Rate us"
                 android:id="@+id/rate_us"/>
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/forty_five_dp"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/thirteen_sp"
+                android:textSize="@dimen/fifteen_sp"
                 android:text="Share"
                 android:id="@+id/share"/>
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/forty_five_dp"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/thirteen_sp"
+                android:textSize="@dimen/fifteen_sp"
                 android:text="Term of uses"
                 android:id="@+id/term_of_uses"/>
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/forty_five_dp"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/thirteen_sp"
+                android:textSize="@dimen/fifteen_sp"
                 android:text="Privacy policy"
                 android:id="@+id/privacy_policy"/>
         </LinearLayout>
