@@ -19,12 +19,12 @@
         android:orientation="horizontal"
         android:background="@drawable/bg_round_white">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/button_call_toggle_mic"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="@dimen/forty_dp"
-            android:background="@drawable/ic_mic"
+            android:src="@drawable/ic_mic"
             android:contentDescription="@string/toggle_mic" />
 
         <ImageButton
@@ -35,11 +35,11 @@
             android:background="@drawable/ic_call"
             android:contentDescription="@string/disconnect_call" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/button_call_toggle_speaker"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/ic_mute"
+            android:src="@drawable/ic_sound"
             android:contentDescription="@string/muted" />
 
     </LinearLayout>
