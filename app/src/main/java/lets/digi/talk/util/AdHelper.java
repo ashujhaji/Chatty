@@ -1,15 +1,15 @@
 package lets.digi.talk.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import lets.digi.talk.BuildConfig;
-
-import lets.digi.talk.R;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
@@ -23,12 +23,15 @@ import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 
+import lets.digi.talk.BuildConfig;
+import lets.digi.talk.R;
+
 public class AdHelper {
 
     public static AdHelper instance;
 
-    public static synchronized AdHelper getInstance(){
-        if (instance==null){
+    public static synchronized AdHelper getInstance() {
+        if (instance == null) {
             instance = new AdHelper();
         }
         return instance;
@@ -36,14 +39,31 @@ public class AdHelper {
 
     private InterstitialAd interstitialAd;
 
-    public static void loadBannerAd(RelativeLayout adLayout, Context context) {
+    public static void loadBannerAd(RelativeLayout adLayout, Activity context,boolean isAdaptive) {
         AdView adView = new AdView(context);
-        adView.setAdSize(AdSize.BANNER);
+        if (isAdaptive){
+            adView.setAdSize(getAdSize(context));
+        }else{
+            adView.setAdSize(AdSize.BANNER);
+        }
         adView.setAdUnitId(bannerAdId());
         adLayout.removeAllViews();
         adLayout.addView(adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
+    }
+
+    private static AdSize getAdSize(Activity context) {
+        Display display = context.getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        float widthPixels = outMetrics.widthPixels;
+        float density = outMetrics.density;
+
+        int adWidth = (int) (widthPixels / density);
+
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, adWidth);
     }
 
     public static void loadAd(Context context, final UnifiedNativeAdView adView) {
@@ -101,23 +121,23 @@ public class AdHelper {
         adView.setNativeAd(unifiedAd);
     }
 
-    public void loadInterstitialAd(Context context, final boolean show){
+    public void loadInterstitialAd(Context context, final boolean show) {
         interstitialAd = new InterstitialAd(context);
         interstitialAd.setAdUnitId(interstitialAdId());
         interstitialAd.loadAd(new AdRequest.Builder().build());
-        interstitialAd.setAdListener(new AdListener(){
+        interstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
-                if (show){
+                if (show) {
                     interstitialAd.show();
                 }
             }
         });
     }
 
-    public void showAd(){
-        if (interstitialAd!=null && interstitialAd.isLoaded()){
+    public void showAd() {
+        if (interstitialAd != null && interstitialAd.isLoaded()) {
             interstitialAd.show();
         }
     }

@@ -17,6 +17,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import lets.digi.talk.R;
 import lets.digi.talk.adapter.MainAdapter;
 import lets.digi.talk.util.AdHelper;
@@ -41,7 +45,11 @@ public class MainActivity extends AppCompatActivity {
         init();
         setToolbar();
         setRecyclerView();
-        AdHelper.loadBannerAd(adLayout, this);
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) { }
+        });
+        AdHelper.loadBannerAd(adLayout, this,false);
     }
 
     @Override
@@ -147,10 +155,5 @@ public class MainActivity extends AppCompatActivity {
     private void startCall() {
         Intent intent = new Intent(this, ConnectActivity.class);
         startActivity(intent);
-/*        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(android.R.id.content,new CallConnectionFragment());
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.addToBackStack(CallConnectionFragment.class.getSimpleName());
-        transaction.commit();*/
     }
 }

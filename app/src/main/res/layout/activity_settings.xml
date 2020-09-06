@@ -50,5 +50,9 @@
                 android:id="@+id/privacy_policy"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:id="@+id/adLayout"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
