@@ -64,7 +64,6 @@ public class CallFragment extends Fragment {
             public void onClick(View view) {
                 boolean enabled = callEvents.onToggleMic();
                 toggleMuteButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), enabled ? R.drawable.ic_mic : R.drawable.ic_mic_mute, null));
-//                toggleMuteButton.setAlpha(enabled ? 1.0f : 0.3f);
             }
         });
 
@@ -73,7 +72,6 @@ public class CallFragment extends Fragment {
             public void onClick(View v) {
                 boolean enabled = callEvents.onToggleSpeaker();
                 toggleSpeaker.setImageDrawable(ResourcesCompat.getDrawable(getResources(), enabled ? R.drawable.ic_sound : R.drawable.ic_mute, null));
-//                toggleSpeaker.setAlpha(enabled ? 1.0f : 0.3f);
             }
         });
 

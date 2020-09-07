@@ -530,12 +530,12 @@ public class PeerConnectionClient {
       peerConnection.dispose();
       peerConnection = null;
     }
-    Log.d(TAG, "Closing audio source.");
     if (audioSource != null) {
       audioSource.dispose();
       audioSource = null;
+      Log.d(TAG, "Closing audio source.");
     }
-    Log.d(TAG, "Stopping capture.");
+
     if (videoCapturer != null) {
       try {
         videoCapturer.stopCapture();
@@ -545,11 +545,13 @@ public class PeerConnectionClient {
       videoCapturerStopped = true;
       videoCapturer.dispose();
       videoCapturer = null;
+      Log.d(TAG, "Stopping capture.");
     }
-    Log.d(TAG, "Closing video source.");
+
     if (videoSource != null) {
       videoSource.dispose();
       videoSource = null;
+      Log.d(TAG, "Closing video source.");
     }
     Log.d(TAG, "Closing peer connection factory.");
     if (factory != null) {
@@ -561,14 +563,6 @@ public class PeerConnectionClient {
     events.onPeerConnectionClosed();
     PeerConnectionFactory.stopInternalTracingCapture();
     PeerConnectionFactory.shutdownInternalTracer();
-  }
-
-  public boolean isHDVideo() {
-    if (!videoCallEnabled) {
-      return false;
-    }
-
-    return videoWidth * videoHeight >= 1280 * 720;
   }
 
   private void getStats() {
