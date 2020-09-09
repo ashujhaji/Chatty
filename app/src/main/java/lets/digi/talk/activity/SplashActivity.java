@@ -3,6 +3,7 @@ package lets.digi.talk.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +35,7 @@ public class SplashActivity extends AppCompatActivity {
             fetchRemoteConfigData();
             Log.d("authTag", "User exist");
         } else {
-            fetchRemoteConfigData();
+            loginAnonymous();
             Log.d("authTag", "User not exist");
         }
     }
@@ -45,9 +46,10 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            moveToNextActivity();
+                            fetchRemoteConfigData();
                         } else {
                             // If sign in fails, display a message to the user.
+                            Toast.makeText(SplashActivity.this,"Login failed",Toast.LENGTH_LONG).show();
                             Log.e("auth", "failed");
                         }
                     }

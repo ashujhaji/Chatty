@@ -312,7 +312,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(this, "Chat is not active", Toast.LENGTH_LONG).show();
                     return;
                 }
-                if (messageField.getText().toString().isEmpty()) {
+                if (messageField.getText().toString().trim().length()<1) {
 
                     return;
                 }
