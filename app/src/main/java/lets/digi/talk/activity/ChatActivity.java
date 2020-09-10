@@ -214,8 +214,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     isChatActive = true;
                     listenForMessages(chatId);
                 } else if (status.contentEquals("finish")) {
-                    isChatActive = false;
-                    chatFinished();
+                    if (isChatActive){
+                        isChatActive = false;
+                        chatFinished();
+                    }
                 }
             }
 
@@ -233,20 +235,22 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getChildrenCount() > 0) {
-                    List<MessagePojo> messageList = new ArrayList<>();
-                    for (DataSnapshot message : snapshot.getChildren()) {
-                        messageList.add(new MessagePojo(message.child("sender").getValue().toString(), message.child("message").getValue().toString()));
-                    }
+                if (isChatActive) {
+                    if (snapshot.getChildrenCount() > 0) {
+                        List<MessagePojo> messageList = new ArrayList<>();
+                        for (DataSnapshot message : snapshot.getChildren()) {
+                            messageList.add(new MessagePojo(message.child("sender").getValue().toString(), message.child("message").getValue().toString()));
+                        }
 
-                    //Notify adapter
-                    if (!messageList.get(messageList.size() - 1).getSender().contentEquals(currentUser.getUid())) {
-                        messages.add(0, messageList.get(messageList.size() - 1));
-                        Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(0);
-                        recyclerView.smoothScrollToPosition(0);
-                        if (!isActivityVisible && isChatActive) {
-                            //send notification
-                            GenerateNotification.send("New message received", messageList.get(messageList.size() - 1).getMessage(), ChatActivity.this);
+                        //Notify adapter
+                        if (!messageList.get(messageList.size() - 1).getSender().contentEquals(currentUser.getUid())) {
+                            messages.add(0, messageList.get(messageList.size() - 1));
+                            Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(0);
+                            recyclerView.smoothScrollToPosition(0);
+                            if (!isActivityVisible) {
+                                //send notification
+                                GenerateNotification.send("New message received", messageList.get(messageList.size() - 1).getMessage(), ChatActivity.this);
+                            }
                         }
                     }
                 }
@@ -312,14 +316,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(this, "Chat is not active", Toast.LENGTH_LONG).show();
                     return;
                 }
-                if (messageField.getText().toString().trim().length()<1) {
+                if (messageField.getText().toString().trim().length() < 1) {
 
                     return;
                 }
                 sendMessage(messageField.getText().toString());
                 break;
             }
-            case R.id.new_chat:{
+            case R.id.new_chat: {
                 showNewChatDialog();
             }
         }
@@ -364,7 +368,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void showNewChatDialog(){
+    private void showNewChatDialog() {
         AlertDialog.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
@@ -377,13 +381,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (!chatId.isEmpty()) {
+                            isChatActive = false;
+                            messages.clear();
+                            Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
                             DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chatId);
                             Map<String, String> message = new HashMap<>();
                             message.put("status", "finish");
                             mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    isChatActive = false;
                                     checkForAvailableChat();
                                 }
                             });
