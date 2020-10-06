@@ -445,7 +445,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         callStartedTimeMs = System.currentTimeMillis();
 
         // Start room connection.
-        //logAndToast(getString(R.string.connecting_to, roomConnectionParameters.roomUrl));
         appRtcClient.connectToRoom(roomConnectionParameters);
 
         // Create and audio manager that will take care of audio routing,
@@ -462,6 +461,16 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         // MODE_IN_COMMUNICATION for best possible VoIP performance.
         Log.d(TAG, "Initializing the audio manager...");
         audioManager.init();
+
+        //Check after 3 min if call is connected or not
+        /*new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (callConnectedTimeMs==0){
+                    disconnect();
+                }
+            }
+        },3000);*/
     }
 
     // Should be called from UI thread

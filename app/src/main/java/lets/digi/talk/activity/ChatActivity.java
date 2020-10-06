@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -152,6 +151,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     //Chat room available
                     for (DataSnapshot chat : snapshot.getChildren()) {
                         chatId = chat.getKey();
+                        listenForStatusChange(chatId);
                         addToChat(chatId);
                         break;
                     }
@@ -205,6 +205,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String status = snapshot.getValue().toString();
+                Log.d("statusTag",status);
                 if (status.contentEquals("waiting")) {
                     dialog.show();
                 } else if (status.contentEquals("ongoing")) {
@@ -214,7 +215,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     isChatActive = true;
                     listenForMessages(chatId);
                 } else if (status.contentEquals("finish")) {
-                    if (isChatActive){
+                    if (isChatActive) {
                         isChatActive = false;
                         chatFinished();
                     }
@@ -264,18 +265,37 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void chatFinished() {
-        final Snackbar snackbar = Snackbar.make(this.findViewById(R.id.bottomView),
-                "Your partner has left this chat. Please restart to chat more.",
-                Snackbar.LENGTH_INDEFINITE
-        );
-        snackbar.setAction("OK", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackbar.dismiss();
-                finish();
+        try {
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(this);
             }
-        });
-        snackbar.show();
+            builder.setTitle("Partner left")
+                    .setMessage("Your partner has left this chat. Please restart to chat more.")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (!chatId.isEmpty()) {
+                                isChatActive = false;
+                                messages.clear();
+                                Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
+                                checkForAvailableChat();
+                            }
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    })
+                    .show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void sendMessage(final String messageText) {
