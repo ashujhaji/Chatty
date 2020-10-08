@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -410,10 +411,16 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     }
 
     private void speakerController(boolean enable) {
-        if (enable) {
-            speakerManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
-        } else {
-            speakerManager.setStreamMute(AudioManager.STREAM_SYSTEM, false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(enable){
+                speakerManager.adjustVolume(
+                        AudioManager.ADJUST_UNMUTE,0
+                );
+            }else{
+                speakerManager.adjustVolume(
+                        AudioManager.ADJUST_MUTE,0
+                );
+            }
         }
     }
 

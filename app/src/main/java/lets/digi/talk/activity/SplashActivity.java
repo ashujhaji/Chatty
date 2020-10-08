@@ -88,7 +88,6 @@ public class SplashActivity extends AppCompatActivity {
 
     private void moveToNextActivity() {
         //start main activity
-        AdHelper.getInstance().showAd();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "307356614949",
-    "firebase_url": "https://chatty-ed78a.firebaseio.com",
-    "project_id": "chatty-ed78a",
-    "storage_bucket": "chatty-ed78a.appspot.com"
+    "project_number": "969916023321",
+    "firebase_url": "https://chatapp-28d9a.firebaseio.com",
+    "project_id": "chatapp-28d9a",
+    "storage_bucket": "chatapp-28d9a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:307356614949:android:399d14111d0161ae3ddacc",
+        "mobilesdk_app_id": "1:969916023321:android:fe140ea119f44298fde088",
         "android_client_info": {
           "package_name": "lets.digi.talk"
         }
       },
       "oauth_client": [
         {
-          "client_id": "307356614949-lvm8v9lqmi8qnjn0bk1elprt91ecv101.apps.googleusercontent.com",
+          "client_id": "969916023321-3sr21oe8uhrp4gfhbicmbadlrqv2nvdm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDkjd16mt0pf2LE53gdFxoS8q6inwLsFEQ"
+          "current_key": "AIzaSyAGq2D-klNiZwTjXlf0JxeY7but-YL7vrc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "307356614949-lvm8v9lqmi8qnjn0bk1elprt91ecv101.apps.googleusercontent.com",
+              "client_id": "969916023321-3sr21oe8uhrp4gfhbicmbadlrqv2nvdm.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
