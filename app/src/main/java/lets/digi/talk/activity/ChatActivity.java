@@ -20,6 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,6 +44,7 @@ import java.util.UUID;
 
 import lets.digi.talk.R;
 import lets.digi.talk.adapter.ChatAdapter;
+import lets.digi.talk.fragment.AlertFragment;
 import lets.digi.talk.model.MessagePojo;
 import lets.digi.talk.util.AdHelper;
 import lets.digi.talk.util.GenerateNotification;
@@ -205,9 +208,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String status = snapshot.getValue().toString();
-                Log.d("statusTag",status);
+                Log.d("statusTag", status);
                 if (status.contentEquals("waiting")) {
-                    dialog.show();
+                    try {
+                        dialog.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else if (status.contentEquals("ongoing")) {
                     disclaimer.setVisibility(View.GONE);
                     dialog.dismiss();
@@ -266,17 +273,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void chatFinished() {
         try {
-            AlertDialog.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(this);
-            }
-            builder.setTitle("Partner left")
-                    .setMessage("Your partner has left this chat. Please restart to chat more.")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            loadFragment(AlertFragment.getInstance("Partner left",
+                    "Your partner has left this chat. Please restart to chat more.",
+                    new View.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(View v) {
                             if (!chatId.isEmpty()) {
                                 isChatActive = false;
                                 messages.clear();
@@ -284,16 +285,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 checkForAvailableChat();
                             }
                         }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            finish();
-                        }
-                    })
-                    .show();
-        }catch (Exception e){
+                    }), AlertFragment.class.getSimpleName());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -351,8 +344,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        AdHelper.getInstance().showAd();
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            super.onBackPressed();
+            AdHelper.getInstance().showAd();
+        }
     }
 
     @Override
@@ -389,17 +384,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showNewChatDialog() {
-        AlertDialog.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(this);
-        }
-        builder.setTitle("New Chat")
-                .setMessage("This Do you really want to switch to new chat?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        loadFragment(AlertFragment.getInstance("New Chat",
+                "Do you really want to switch to new chat?",
+                new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(View v) {
                         if (!chatId.isEmpty()) {
                             isChatActive = false;
                             messages.clear();
@@ -415,13 +404,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             });
                         }
                     }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
+                }), AlertFragment.class.getSimpleName());
+    }
+
+    private void loadFragment(Fragment fragment, String name) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(android.R.id.content, fragment);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.addToBackStack(name);
+        transaction.commit();
     }
 }

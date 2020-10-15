@@ -595,7 +595,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         } else {
             if (params.offerSdp != null) {
                 peerConnectionClient.setRemoteDescription(params.offerSdp);
-                logAndToast("Creating ANSWER...");
+                logAndToast("Connecting...");
                 // Create answer. Answer SDP will be sent to offering client in
                 // PeerConnectionEvents.onLocalDescription event.
                 peerConnectionClient.createAnswer();
@@ -674,7 +674,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                logAndToast("Remote end hung up; dropping PeerConnection");
+                //logAndToast("Remote end hung up; dropping PeerConnection");
                 disconnect();
             }
         });
