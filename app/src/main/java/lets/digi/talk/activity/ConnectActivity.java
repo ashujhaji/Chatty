@@ -170,7 +170,6 @@ public class ConnectActivity extends Activity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 connectToRoom(roomId, false, false, false, 0);
-                Log.d(TAG, "chat created");
             }
         });
     }
@@ -184,8 +183,8 @@ public class ConnectActivity extends Activity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 isChatActive = true;
+                Log.d("callTag",roomId);
                 connectToRoom(roomId, false, false, false, 0);
-                Log.d(TAG, "chat created");
             }
         });
     }

@@ -215,6 +215,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 } else if (status.contentEquals("ongoing")) {
                     disclaimer.setVisibility(View.GONE);
+                    getSupportFragmentManager().popBackStackImmediate();
                     dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "Start your chat", Toast.LENGTH_SHORT).show();
                     isChatActive = true;
@@ -389,7 +390,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getFragmentManager().popBackStackImmediate();
                         if (!chatId.isEmpty()) {
                             isChatActive = false;
                             messages.clear();

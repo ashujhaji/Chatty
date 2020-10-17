@@ -330,6 +330,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                     mediaProjectionManager.createScreenCaptureIntent(), CAPTURE_PERMISSION_REQUEST_CODE);
         } else {
             startCall();
+            AdHelper.getInstance().loadInterstitialAd(this,false);
         }
     }
 
@@ -542,6 +543,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         } else {
             setResult(RESULT_CANCELED);
         }
+        AdHelper.getInstance().showAd();
         finish();
     }
 
