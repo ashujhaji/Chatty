@@ -1,11 +1,9 @@
 package lets.digi.talk.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -154,7 +152,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     //Chat room available
                     for (DataSnapshot chat : snapshot.getChildren()) {
                         chatId = chat.getKey();
-                        listenForStatusChange(chatId);
+                        listenForStatusChange(chatId, false);
                         addToChat(chatId);
                         break;
                     }
@@ -180,7 +178,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mRef.child(chatId).setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                listenForStatusChange(chatId);
+                listenForStatusChange(chatId, true);
                 Log.d(TAG, "chat created");
             }
         });
@@ -202,7 +200,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void listenForStatusChange(final String chat_Id) {
+    private void listenForStatusChange(final String chat_Id, final boolean listenToMessage) {
         DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chat_Id).child("status");
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -220,7 +218,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "Start your chat", Toast.LENGTH_SHORT).show();
                     isChatActive = true;
-                    listenForMessages(chatId);
+                    if (listenToMessage)
+                        listenForMessages(chatId);
                 } else if (status.contentEquals("finish")) {
                     if (isChatActive) {
                         isChatActive = false;
@@ -244,6 +243,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isChatActive) {
+                    Log.d("msgTag", "received");
                     if (snapshot.getChildrenCount() > 0) {
                         List<MessagePojo> messageList = new ArrayList<>();
                         for (DataSnapshot message : snapshot.getChildren()) {
@@ -294,7 +294,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void sendMessage(final String messageText) {
         //add to list
         disclaimer.setVisibility(View.GONE);
-        messages.add(0, new MessagePojo(currentUser.getUid(), messageField.getText().toString()));
+        messages.add(0, new MessagePojo(currentUser.getUid(), messageField.getText().toString().trim()));
         messageField.setText("");
         Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(0);
         recyclerView.smoothScrollToPosition(0);
@@ -333,7 +333,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                     return;
                 }
-                sendMessage(messageField.getText().toString());
+                sendMessage(messageField.getText().toString().trim());
                 break;
             }
             case R.id.new_chat: {
@@ -389,6 +389,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        getFragmentManager().popBackStackImmediate();
                         if (!chatId.isEmpty()) {
                             isChatActive = false;
                             messages.clear();
