@@ -523,13 +523,4 @@ public class ConnectActivity extends Activity {
                 .show();
         return false;
     }
-
-
-
-/*  private final OnClickListener connectListener = new OnClickListener() {
-    @Override
-    public void onClick(View view) {
-      //connectToRoom(roomEditText.getText().toString(), false, false, false, 0);
-    }
-  };*/
 }

@@ -1,8 +1,10 @@
 package lets.digi.talk;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
@@ -26,16 +28,12 @@ import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.webrtc.Camera2Enumerator;
-import org.webrtc.CameraEnumerator;
 import org.webrtc.EglBase;
 import org.webrtc.IceCandidate;
-import org.webrtc.Logging;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.RendererCommon.ScalingType;
 import org.webrtc.SessionDescription;
 import org.webrtc.StatsReport;
-import org.webrtc.VideoCapturer;
 import org.webrtc.VideoFileRenderer;
 import org.webrtc.VideoRenderer;
 
@@ -125,6 +123,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private boolean iceConnected;
     private boolean isError;
     private boolean callControlFragmentVisible = true;
+    private boolean isCallConnected = false;
     private long callStartedTimeMs = 0;
     private long callConnectedTimeMs = 0;
     private boolean micEnabled = true;
@@ -330,7 +329,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                     mediaProjectionManager.createScreenCaptureIntent(), CAPTURE_PERMISSION_REQUEST_CODE);
         } else {
             startCall();
-            AdHelper.getInstance().loadInterstitialAd(this,false);
+            AdHelper.getInstance().loadInterstitialAd(this, false);
         }
     }
 
@@ -383,6 +382,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     // CallFragment.OnCallEvents interface implementation.
     @Override
     public void onCallHangUp() {
+        isCallConnected = false;
         disconnect();
     }
 
@@ -413,13 +413,13 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     private void speakerController(boolean enable) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(enable){
+            if (enable) {
                 speakerManager.adjustVolume(
-                        AudioManager.ADJUST_UNMUTE,0
+                        AudioManager.ADJUST_UNMUTE, 0
                 );
-            }else{
+            } else {
                 speakerManager.adjustVolume(
-                        AudioManager.ADJUST_MUTE,0
+                        AudioManager.ADJUST_MUTE, 0
                 );
             }
         }
@@ -484,6 +484,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     // Should be called from UI thread
     private void callConnected() {
         mediaPlayer.stop();
+        isCallConnected = true;
         callConnectedTimeMs = System.currentTimeMillis();
         timerHandler.postDelayed(timer, 0);
         showTimer();
@@ -543,8 +544,29 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         } else {
             setResult(RESULT_CANCELED);
         }
-        AdHelper.getInstance().showAd();
-        finish();
+        exitActivity();
+    }
+
+    private void exitActivity() {
+        if (isCallConnected) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Call disconnected")
+                    .setMessage("Your partner has left the call. Go back to home")
+                    .setCancelable(false)
+                    .setNeutralButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                    AdHelper.getInstance().showAd();
+                                    finish();
+                                }
+                            })
+                    .create()
+                    .show();
+        } else {
+            AdHelper.getInstance().showAd();
+            finish();
+        }
     }
 
     private void disconnectWithErrorMessage(final String errorMessage) {
