@@ -248,7 +248,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     if (snapshot.getChildrenCount() > 0) {
                         List<MessagePojo> messageList = new ArrayList<>();
                         for (DataSnapshot message : snapshot.getChildren()) {
-                            messageList.add(new MessagePojo(message.child("sender").getValue().toString(), message.child("message").getValue().toString()));
+                            messageList.add(new MessagePojo(message.child("sender").getValue().toString(),
+                                    message.child("message").getValue().toString(),
+                                    Long.parseLong(message.child("timestamp").getValue().toString())));
                         }
 
                         //Notify adapter
@@ -295,7 +297,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void sendMessage(final String messageText) {
         //add to list
         disclaimer.setVisibility(View.GONE);
-        messages.add(0, new MessagePojo(currentUser.getUid(), messageField.getText().toString().trim()));
+        messages.add(0, new MessagePojo(currentUser.getUid(), messageField.getText().toString().trim(),System.currentTimeMillis()));
         messageField.setText("");
         Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(0);
         recyclerView.smoothScrollToPosition(0);
@@ -304,6 +306,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Map<String, String> message = new HashMap<>();
         message.put("sender", currentUser.getUid());
         message.put("message", messageText);
+        message.put("timestamp",String.valueOf(System.currentTimeMillis()));
         mRef.child("messages").push().setValue(message)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

@@ -8,7 +8,9 @@ import android.net.Uri;
 import lets.digi.talk.R;
 import lets.digi.talk.model.ChatOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -36,5 +38,16 @@ public class Constant {
         Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=" + context.getPackageName());
         Intent intent = new Intent(Intent.ACTION_VIEW,uri);
         context.startActivity(intent);
+    }
+
+    public static String formatDate(Long timeStamp) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a");
+            Date netDate = new Date(timeStamp);
+            return sdf.format(netDate);
+        } catch (Exception e) {
+            e.toString();
+            return "";
+        }
     }
 }

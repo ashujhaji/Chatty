@@ -3,10 +3,12 @@ package lets.digi.talk.model;
 public class MessagePojo {
     private String sender;
     private String message;
+    private Long timestamp;
 
-    public MessagePojo(String sender, String message) {
+    public MessagePojo(String sender, String message,Long timestamp) {
         this.sender = sender;
         this.message = message;
+        this.timestamp = timestamp;
     }
 
     public String getSender() {
@@ -24,4 +26,8 @@ public class MessagePojo {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public Long getTimestamp(){return  timestamp;}
+
+    public void  setTimestamp(Long timestamp){this.timestamp = timestamp;}
 }

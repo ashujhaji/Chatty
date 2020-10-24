@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import lets.digi.talk.R;
 import lets.digi.talk.model.MessagePojo;
+import lets.digi.talk.util.Constant;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -53,8 +55,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SenderViewHolder){
             ((SenderViewHolder) holder).textView.setText(messages.get(position).getMessage());
+            ((SenderViewHolder) holder).time.setText(Constant.formatDate(messages.get(position).getTimestamp()));
         }else if (holder instanceof ReceiverViewHolder){
             ((ReceiverViewHolder) holder).textView.setText(messages.get(position).getMessage());
+            ((ReceiverViewHolder) holder).time.setText(Constant.formatDate(messages.get(position).getTimestamp()));
         }
     }
 
@@ -64,20 +68,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public static class ReceiverViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
+        public TextView textView,time;
 
         public ReceiverViewHolder(View itemView, final Context context) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.textview);
+            this.time = itemView.findViewById(R.id.timeText);
         }
     }
 
     public static class SenderViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
+        public TextView textView,time;
 
         public SenderViewHolder(View itemView, final Context context) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.textview);
+            this.time = itemView.findViewById(R.id.timeText);
         }
     }
 
