@@ -23,6 +23,8 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.google.firebase.database.DatabaseReference;
@@ -47,7 +49,7 @@ import lets.digi.talk.util.AdHelper;
  * Activity for peer connection call setup, call waiting
  * and call view.
  */
-public class CallActivity extends Activity implements AppRTCClient.SignalingEvents,
+public class CallActivity extends AppCompatActivity implements AppRTCClient.SignalingEvents,
         PeerConnectionClient.PeerConnectionEvents,
         CallFragment.OnCallEvents {
     public String chatId = "";
@@ -333,14 +335,14 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         }
     }
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode != CAPTURE_PERMISSION_REQUEST_CODE)
             return;
         mediaProjectionPermissionResultCode = resultCode;
         mediaProjectionPermissionResultData = data;
         startCall();
-    }
+    }*/
 
     // Activity interfaces
     @Override
@@ -551,7 +553,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         if (isCallConnected) {
             new AlertDialog.Builder(this)
                     .setTitle("Call disconnected")
-                    .setMessage("Your partner has left the call. Go back to home")
+                    .setMessage("Your partner has left the call.")
                     .setCancelable(false)
                     .setNeutralButton("Ok",
                             new DialogInterface.OnClickListener() {
