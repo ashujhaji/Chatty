@@ -205,27 +205,31 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String status = snapshot.getValue().toString();
-                Log.d("statusTag", status);
-                if (status.contentEquals("waiting")) {
-                    try {
-                        dialog.show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                try {
+                    String status = snapshot.getValue().toString();
+                    Log.d("statusTag", status);
+                    if (status.contentEquals("waiting")) {
+                        try {
+                            dialog.show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (status.contentEquals("ongoing")) {
+                        disclaimer.setVisibility(View.GONE);
+                        getSupportFragmentManager().popBackStackImmediate();
+                        dialog.dismiss();
+                        Toast.makeText(getApplicationContext(), "Start your chat", Toast.LENGTH_SHORT).show();
+                        isChatActive = true;
+                        if (listenToMessage)
+                            listenForMessages(chatId);
+                    } else if (status.contentEquals("finish")) {
+                        if (isChatActive) {
+                            isChatActive = false;
+                            chatFinished();
+                        }
                     }
-                } else if (status.contentEquals("ongoing")) {
-                    disclaimer.setVisibility(View.GONE);
-                    getSupportFragmentManager().popBackStackImmediate();
-                    dialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "Start your chat", Toast.LENGTH_SHORT).show();
-                    isChatActive = true;
-                    if (listenToMessage)
-                        listenForMessages(chatId);
-                } else if (status.contentEquals("finish")) {
-                    if (isChatActive) {
-                        isChatActive = false;
-                        chatFinished();
-                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
             }
 
