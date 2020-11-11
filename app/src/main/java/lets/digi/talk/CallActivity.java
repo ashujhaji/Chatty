@@ -3,6 +3,7 @@ package lets.digi.talk;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -550,6 +551,8 @@ public class CallActivity extends AppCompatActivity implements AppRTCClient.Sign
     }
 
     private void exitActivity() {
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
         if (isCallConnected) {
             new AlertDialog.Builder(this)
                     .setTitle("Call disconnected")
