@@ -152,9 +152,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     //Chat room available
                     for (DataSnapshot chat : snapshot.getChildren()) {
                         chatId = chat.getKey();
-                        listenForStatusChange(chatId, false);
-                        addToChat(chatId);
-                        break;
+                        int users = Integer.parseInt(chat.child("users").getValue().toString());
+                        if(users==1){
+                            listenForStatusChange(chatId, false);
+                            addToChat(chatId);
+                            break;
+                        }
                     }
                 } else {
                     //No chat room available. Create new one
@@ -172,9 +175,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void createNewChat() {
         DatabaseReference mRef = mDatabaseRef.child("ongoing_chats");
         chatId = UUID.randomUUID().toString();
-        Map<String, String> message = new HashMap<>();
+        Map<String, Object> message = new HashMap<>();
         //message.put("chat_id", chatId);
         message.put("status", "waiting");
+        message.put("users",1);
         mRef.child(chatId).setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -186,8 +190,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addToChat(final String chatId) {
         DatabaseReference mRef = mDatabaseRef.child("ongoing_chats").child(chatId);
-        Map<String, String> message = new HashMap<>();
+        Map<String, Object> message = new HashMap<>();
         message.put("status", "ongoing");
+        message.put("users",2);
         mRef.setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
